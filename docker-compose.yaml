@@ -1,0 +1,64 @@
+version: '3.3'
+services:
+  cockroach:
+    image: cockroachdb/cockroach:v22.2.8
+    ports:
+      - "26257:26257"
+    hostname: cockroach
+    volumes:
+      - "./_cockroach-data:/cockroach/cockroach-data"
+    command: start-single-node --cluster-name=cockroach --insecure
+    networks:
+      mesh:
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health?ready=1" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  cowboys-svc:
+    hostname: cowboys-svc
+    env_file:
+      - .local-env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - cockroach
+    networks:
+      mesh:
+    ports:
+      - 9090
+    volumes:
+      - go:/go
+      - ${PWD}:/src
+    command: go run .
+    labels:
+      - traefik.http.routers.grpc-cowboys-svc.rule=PathPrefix(`/cowboys-svc`)
+      - traefik.http.routers.grpc-cowboys-svc.service=grpc-cowboys-svc
+      - traefik.http.routers.grpc-cowboys-svc.entrypoints=grpc
+      - traefik.http.routers.web-cowboys-svc.service=web-cowboys-svc
+      - traefik.http.routers.web-cowboys-svc.entrypoints=web
+      - traefik.http.services.grpc-cowboys-svc.loadbalancer.server.port=8081
+      - traefik.http.services.grpc-cowboys-svc.loadbalancer.server.scheme=h2c
+      - traefik.http.services.web-cowboys-svc.loadbalancer.server.port=9090
+      - traefik.http.services.web-cowboys-svc.loadbalancer.server.scheme=http
+    healthcheck:
+      test: [ "CMD", "/grpc_health_probe", -addr=:8081 ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  whoami:
+    image: "traefik/whoami"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.entrypoints=web"
+    networks:
+      mesh:
+
+volumes:
+  go:
+
+networks:
+  mesh: { }

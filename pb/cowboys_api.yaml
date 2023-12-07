@@ -1,0 +1,16 @@
+type: google.api.Service
+config_version: 3
+
+http:
+  rules:
+    - selector: cowboys.CowboysService.Run
+      post: "/run"
+      body: "*"
+
+    - selector: cowboys.CowboysService.ReloadDefaultCowboys
+      post: "/reload"
+      body: "*"
+
+    - selector: cowboys.CowboysService.ShootAtRandom
+      post: "/shoot"
+      body: "*"

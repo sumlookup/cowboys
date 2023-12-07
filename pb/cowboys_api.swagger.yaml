@@ -1,0 +1,52 @@
+openapiOptions:
+  file:
+    # the file name must be the same as one passed to protoc when generating .swagger.json
+    - file: "github.com/sumlookup/cowboys/pb/cowboys.proto"
+      option:
+        info:
+          title: Cowboys
+          version: "1.0"
+        schemes:
+          - HTTPS
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        responses:
+          "403":
+            description: Returned when the user does not have permission to access the resource.
+          "404":
+            description: Returned when the resource does not exist.
+            schema:
+              jsonSchema:
+                type:
+                  - STRING
+  service:
+    - service: cowboys.CowboysService
+      option:
+        description: "Module Tds service"
+  method:
+    - method: cowboys.CowboysService.Run
+      option:
+        description: "Allows to run the simulated shootout where initial cowboys shoot randomly"
+        summary: "Runs cowboys sim"
+        responses:
+          "200":
+            examples:
+              "application/json": '{}'
+    - method: cowboys.CowboysService.ReloadDefaultCowboys
+      option:
+        description: "Allows to clear all data about cowboys and load defaults again"
+        summary: "Reload data"
+        responses:
+          "200":
+            examples:
+              "application/json": '{}'
+    - method: cowboys.CowboysService.ShootAtRandom
+      option:
+        description: "Allows to shoot a random cowboy by providing shooter and receiver id"
+        summary: "Shoot At Random"
+        responses:
+          "200":
+            examples:
+              "application/json": '{}'

@@ -1,0 +1,52 @@
+version: '3'
+
+tasks:
+  test:
+    env:
+      LOG_LEVEL: error
+      ENV: test
+      SELECTOR: memory
+      REGISTRY: memory
+      TRANSPORT: memory
+      BROKER: memory
+    desc: "Runs unit tests and displays code coverage"
+    cmds:
+      - go test -coverprofile=profile.cov -v ./... --tags "json1"
+      - go tool cover -func=profile.cov | grep total | awk '{print $3}' | tee coverage.log
+      - rm -fr coverage.log profile.cov
+
+  testf:
+    desc: "Runs unit tests, shows only failed one and displays code coverage"
+    cmds:
+      - LOG_LEVEL=error ENV=test SELECTOR=static TRANSPORT=memory BROKER=memory go test -coverprofile=profile.cov ./... --tags "json1"
+      - go tool cover -func=profile.cov | grep total | awk '{print $3}' | tee coverage.log
+
+  coverage:
+    desc: "Generate and opens HTML test coverage"
+    cmds:
+      - LOG_LEVEL=error ENV=test SELECTOR=static TRANSPORT=memory BROKER=memory go test -coverprofile=profile.cov -v ./... --tags "json1"
+      - go tool cover -html=profile.cov
+      - rm -fr coverage.log profile.cov
+
+  proto:
+    desc: "Generates protobuf basing on proto files"
+    cmds:
+      - protoc -I $GOPATH/src  -I $GOPATH/src/github.com/googleapis/googleapis -I $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway --go_out=paths=source_relative:../../../  --go-grpc_out=paths=source_relative:../../../ $GOPATH/src/github.com/sumlookup/cowboys/pb/*.proto
+#      - task app:mock
+
+  protogw:
+    desc: "Generates protobuf grpc-gateway from yaml config files v2"
+    cmds:
+      - protoc  -I $GOPATH/src -I $GOPATH/include -I $GOPATH/src/github.com/googleapis/googleapis -I $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway --grpc-gateway_out ../../../ --grpc-gateway_opt paths=source_relative --grpc-gateway_opt logtostderr=true --grpc-gateway_opt generate_unbound_methods=true --grpc-gateway_opt standalone=false --grpc-gateway_opt grpc_api_configuration=$GOPATH/src/github.com/sumlookup/cowboys/pb/cowboys_api.yaml $GOPATH/src/github.com/sumlookup/cowboys/pb/*.proto
+
+  swagger-yaml:
+    desc: "Generates swagger definition"
+    cmds:
+      - ./common/scripts/proto-doc-api-yaml.sh
+#      todo: fix docs
+
+  compose:
+    desc: "Run docker compose"
+    cmds:
+      - docker compose -p castai -f ./docker-compose.yaml up cockroach -d
+      - docker compose -p castai -f ./docker-compose.yaml up

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package cowboys;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/sumlookup/cowboys/pb;cowboys";
+
+service CowboysService {
+
+  rpc Run(RunRequest) returns (RunResponse){};
+  rpc ReloadDefaultCowboys(ReloadDefaultCowboysRequest) returns (ReloadDefaultCowboysResponse){};
+
+  rpc GetCowboyByName(GetCowboyByNameRequest) returns (GetCowboyByNameResponse){};
+
+  rpc ShootAtRandom(ShootAtRandomRequest) returns (ShootAtRandomResponse) {};
+
+  rpc Test(TestRequest) returns (TestResponse){}
+}
+
+message TestRequest {
+  string id = 1;
+}
+message TestResponse{}
+
+message RunRequest {}
+
+message DamageExchange {
+  string from = 1;
+  string to = 2;
+  int32 value = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message Cowboy {
+  string name = 1;
+  int32 health = 2;
+  int32 damage = 3;
+}
+
+message RunResponse {
+  repeated DamageExchange damage_log = 1;
+  string winner = 2;
+}
+
+message ReloadDefaultCowboysRequest {}
+
+message ReloadDefaultCowboysResponse {
+  repeated Cowboy cowboys = 1;
+}
+
+message GetCowboyByNameRequest {
+  string name = 1;
+}
+
+message GetCowboyByNameResponse {
+  Cowboy cowboy = 1;
+}
+
+message ShootAtRandomRequest {
+  string shooter_id = 1;
+  string shooter_name = 2;
+  int32 shooter_damage = 3;
+}
+
+message ShootAtRandomResponse {
+  int32 receiver_health = 1;
+}

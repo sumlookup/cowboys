@@ -1,0 +1,14 @@
+_cockroach-data
+.env
+.DS_Store
+.idea
+test.log
+coverage.log
+app
+profile.cov
+handler/.embedded-postgres-go/
+.vscode
+pans/.embedded-postgres-go/
+# required for hot reload
+main
+vendor
