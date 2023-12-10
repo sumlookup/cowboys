@@ -29,23 +29,19 @@ func (q *Queries) CreateCowboy(ctx context.Context, arg CreateCowboyParams) (uui
 	return id, err
 }
 
-const deleteAllCowboys = `-- name: DeleteAllCowboys :one
-DELETE from cowboys RETURNING id, created_at, updated_at, deleted_at, name, health, damage
+type CreateManyCowboysParams struct {
+	Name   string `json:"name"`
+	Health int32  `json:"health"`
+	Damage int32  `json:"damage"`
+}
+
+const deleteAllCowboys = `-- name: DeleteAllCowboys :exec
+DELETE from cowboys
 `
 
-func (q *Queries) DeleteAllCowboys(ctx context.Context) (*Cowboy, error) {
-	row := q.db.QueryRow(ctx, deleteAllCowboys)
-	var i Cowboy
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-		&i.Name,
-		&i.Health,
-		&i.Damage,
-	)
-	return &i, err
+func (q *Queries) DeleteAllCowboys(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteAllCowboys)
+	return err
 }
 
 const getRandomCowboy = `-- name: GetRandomCowboy :one

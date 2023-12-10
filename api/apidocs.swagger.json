@@ -1,0 +1,416 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Cowboys Service",
+    "version": "1.0"
+  },
+  "tags": [
+    {
+      "name": "CowboysService"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/logs/{game_id}": {
+      "get": {
+        "summary": "Get Game Logs",
+        "description": "Allows to fetch logs for an intermediate level game",
+        "operationId": "GetGameLogs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cowboysGetGameLogsResponse"
+            },
+            "examples": {
+              "application/json": {
+                "game_logs": [
+                  {
+                    "id": "21027de8-319e-4278-a6e2-257c5efd65f1",
+                    "created_at": "2023-12-09T21:51:32.245194Z",
+                    "shooter_id": "29e302ed-93fb-4fd6-b436-61e3bbff7869",
+                    "receiver_id": "cf707497-1d92-4171-97f5-7d986b176fcc",
+                    "damage": 1,
+                    "shooter_health": 10,
+                    "receiver_health": 5
+                  }
+                ],
+                "page": 0,
+                "total_count": 33
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CowboysService"
+        ]
+      }
+    },
+    "/reload": {
+      "post": {
+        "summary": "Reload data",
+        "description": "Allows to clear all data about cowboys and load defaults again",
+        "operationId": "ReloadDefaultCowboys",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cowboysReloadDefaultCowboysResponse"
+            },
+            "examples": {
+              "application/json": {
+                "cowboys": [
+                  {
+                    "name": "John",
+                    "health": 10,
+                    "damage": 1
+                  },
+                  {
+                    "name": "Bill",
+                    "health": 8,
+                    "damage": 2
+                  },
+                  {
+                    "name": "Sam",
+                    "health": 10,
+                    "damage": 1
+                  },
+                  {
+                    "name": "Peter",
+                    "health": 5,
+                    "damage": 3
+                  },
+                  {
+                    "name": "Philip",
+                    "health": 15,
+                    "damage": 1
+                  }
+                ]
+              }
+            }
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cowboysReloadDefaultCowboysRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CowboysService"
+        ]
+      }
+    },
+    "/run": {
+      "post": {
+        "summary": "Runs cowboys sim",
+        "description": "Allows to run the simulated shootout where initial cowboys shoot randomly",
+        "operationId": "Run",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cowboysRunResponse"
+            },
+            "examples": {
+              "application/json": {}
+            }
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cowboysRunRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CowboysService"
+        ]
+      }
+    },
+    "/shoot": {
+      "post": {
+        "summary": "Shoot At Random",
+        "description": "Allows to shoot a random cowboy by providing shooter and receiver id",
+        "operationId": "ShootAtRandom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cowboysShootAtRandomResponse"
+            },
+            "examples": {
+              "application/json": {}
+            }
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cowboysShootAtRandomRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CowboysService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cowboysCowboy": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "health": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "damage": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cowboysGameLog": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shooter_id": {
+          "type": "string"
+        },
+        "receiver_id": {
+          "type": "string"
+        },
+        "damage": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shooter_health": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "receiver_health": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cowboysGetGameLogsResponse": {
+      "type": "object",
+      "properties": {
+        "game_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cowboysGameLog"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cowboysReloadDefaultCowboysRequest": {
+      "type": "object"
+    },
+    "cowboysReloadDefaultCowboysResponse": {
+      "type": "object",
+      "properties": {
+        "cowboys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cowboysCowboy"
+          }
+        }
+      }
+    },
+    "cowboysRunRequest": {
+      "type": "object"
+    },
+    "cowboysRunResponse": {
+      "type": "object"
+    },
+    "cowboysShootAtRandomRequest": {
+      "type": "object",
+      "properties": {
+        "shooter_id": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "shooter_name": {
+          "type": "string"
+        },
+        "shooter_damage": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cowboysShootAtRandomResponse": {
+      "type": "object",
+      "properties": {
+        "receiver_health": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,15 @@
 -- name: CreateCowboy :one
 INSERT INTO cowboys (name, health, damage) VALUES (@name, @health, @damage) RETURNING id::uuid;
 
--- name: CreateManyCowboys :batchmany
-INSERT INTO cowboys (name, health, damage) VALUES (@name, @health, @damage) RETURNING *;
+-- name: CreateManyCowboys :copyfrom
+INSERT INTO cowboys (name, health, damage) VALUES (@name, @health, @damage);
 
 -- name: UpdateCowboyHealth :one
 UPDATE cowboys SET health = (health + @health),
     updated_at = NOW() WHERE id = @id::uuid RETURNING *;
 
--- name: DeleteAllCowboys :one
-DELETE from cowboys RETURNING *;
+-- name: DeleteAllCowboys :exec
+DELETE from cowboys;
 
 -- name: GetSingleCowboyByName :one
 SELECT * from cowboys where name = @name limit 1;

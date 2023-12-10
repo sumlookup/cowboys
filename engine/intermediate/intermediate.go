@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
+	"github.com/sumlookup/cowboys/dao"
 	daodb "github.com/sumlookup/cowboys/dao/db"
 	pb "github.com/sumlookup/cowboys/pb"
 	"github.com/sumlookup/mini/service"
@@ -17,21 +18,8 @@ import (
 type IntermediateGameEngine struct {
 	Dao     daodb.Querier
 	Db      *pgxpool.Pool
-	Conn    *pgx.Conn
 	Service *service.Service
 }
-
-// todo: move these to be exposed as service items
-var (
-	HTTP_PORT = "9090"
-	SELECTOR  = "registry"
-)
-
-// Intermediate implementation :
-// Data is laoded from a file and set in memory
-// Each cowboy has its own routine that creates a new grpc client and calls grpc endpoint to shoot random cowboy
-// When the endpoint receives the call it will push the endpoint action to the engine
-// before every action the cowboy checks its own health and shoots random
 
 func NewIntermediateGameEngine(db daodb.Querier, pool *pgxpool.Pool, service *service.Service) *IntermediateGameEngine {
 	return &IntermediateGameEngine{
@@ -46,16 +34,15 @@ func (b *IntermediateGameEngine) Run(ctx context.Context) error {
 
 	mode := b.GameMode()
 	log.Infof("Starting : %s mode", mode)
-	dao := daodb.New(b.Db)
 
 	// get players from DB
-	cowboys, err := dao.ListAliveCowboys(ctx, daodb.ListAliveCowboysParams{
+	cowboys, err := b.Dao.ListAliveCowboys(ctx, daodb.ListAliveCowboysParams{
 		QuerySort:   "asc", // Oldest cowboys first
 		QueryOffset: 0,
 		QueryLimit:  5, // 5 at a time as per requirements
 	})
 	if err != nil {
-		log.Error("failed to to fetch alive cowboys : %v", err)
+		log.Errorf("failed to to fetch alive cowboys : %v", err)
 		return err
 	}
 
@@ -64,9 +51,9 @@ func (b *IntermediateGameEngine) Run(ctx context.Context) error {
 		return fmt.Errorf("more than one cowboy is required to simulate this shooter, currently found : %v", len(cowboys))
 	}
 
-	gameId, err := dao.CreateGame(ctx, b.GameMode())
+	gameId, err := b.Dao.CreateGame(ctx, b.GameMode())
 	if err != nil {
-		log.Error("failed to create a new game : %v", err)
+		log.Errorf("failed to create a new game : %v", err)
 		return err
 	}
 
@@ -82,7 +69,7 @@ func (b *IntermediateGameEngine) Run(ctx context.Context) error {
 func (b *IntermediateGameEngine) StartGame(ctx context.Context, id, gameId uuid.UUID, name string) error {
 	log := logrus.WithContext(ctx)
 
-	engineClient := b.Service.Client(SELECTOR).Connect(b.Service.Name)
+	engineClient := b.Service.Client(getClientSelector()).Connect(b.Service.Name)
 
 	log.Infof("StartGame - %v starting the game", name)
 	newclient := pb.NewCowboysServiceClient(engineClient)
@@ -90,48 +77,48 @@ func (b *IntermediateGameEngine) StartGame(ctx context.Context, id, gameId uuid.
 	t := time.NewTicker(1 * time.Second)
 	defer t.Stop()
 
-	for {
-		select {
-		case <-t.C:
-			db := daodb.New(b.Db)
-			// get current state
-			cb, err := db.GetSingleAliveCowboyAndCount(ctx, id)
-			if err != nil {
-				if err.Error() == "no rows in result set" {
-					log.Infof("%v is Dead", name)
-					return nil
-				}
-				log.Error("failed to get alive cowboy state : ", err)
-				return err
-			}
-
-			if cb.Available == 0 {
-				log.Infof("%v is the Winner", name)
-				b.SetWinner(ctx, name, id, gameId)
+	for range t.C {
+		// get current state
+		cb, err := b.Dao.GetSingleAliveCowboyAndCount(ctx, id)
+		if err != nil {
+			if err.Error() == "no rows in result set" {
+				log.Infof("%v is Dead", name)
 				return nil
 			}
-			_, err = newclient.ShootAtRandom(ctx, &pb.ShootAtRandomRequest{
-				ShooterId:     id.String(),
-				ShooterName:   name,
-				ShooterDamage: cb.Damage,
-			})
+			log.Error("failed to get alive cowboy state : ", err)
+			return err
+		}
+
+		if cb.Available == 0 {
+			log.Infof("%v is the Winner for game_id = %v", name, gameId)
+			err = b.SetWinner(ctx, name, id, gameId)
 			if err != nil {
-				log.Errorf("failed while shooting a random - %v", err)
-				return err
+				log.Errorf("failed to set %v, : %v, as the winner - %v", name, id, err)
 			}
+			return nil
+		}
+		_, err = newclient.ShootAtRandom(ctx, &pb.ShootAtRandomRequest{
+			ShooterId:     id.String(),
+			GameId:        gameId.String(),
+			ShooterName:   name,
+			ShooterDamage: cb.Damage,
+		})
+		if err != nil {
+			log.Errorf("failed while shooting a random - %v", err)
+			return err
 		}
 	}
 
 	return nil
 }
 
-func (b *IntermediateGameEngine) ShootRandomCowboy(ctx context.Context, shooterId uuid.UUID, shooterName string, shooterDmg int32) (int32, error) {
+func (b *IntermediateGameEngine) ShootRandomCowboy(ctx context.Context, shooterId, gameId uuid.UUID, shooterName string, shooterDmg int32) (int32, error) {
 	log := logrus.WithContext(ctx)
 
 	st := map[string]interface{}{}
-	//healthAfterDmg := int32(0)
+
 	err := crdbpgx.ExecuteTx(context.Background(), b.Db, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		return shootAtCowboyTx(context.Background(), tx, shooterId, shooterName, shooterDmg, st)
+		return dao.ShootAtCowboyTx(context.Background(), tx, shooterId, shooterName, shooterDmg, st)
 	})
 	if err != nil {
 		if err.Error() == "no rows in result set" {
@@ -141,10 +128,26 @@ func (b *IntermediateGameEngine) ShootRandomCowboy(ctx context.Context, shooterI
 		log.Errorf("failed updating DB with shooter things : %v", err)
 		return 0, nil
 	}
-	log.Infof("%v H: %v : shot at : %v, with damage : %v, and reduced health from : %v to : %v", st["shooter"], st["shooter_health"], st["victim_name"], st["shooter_damage"], st["victim_health"], st["victim_health_after"])
-	val, ok := st["victim_health_after"].(int32)
+
+	log.Infof("%v H: %v : shot at : %v, with damage : %v, and reduced health from : %v to : %v", st["shooter_name"], st["shooter_health"], st["receiver_name"], st["shooter_damage"], st["receiver_health"], st["receiver_health_after"])
+
+	err = b.Dao.CreateGameLog(ctx, daodb.CreateGameLogParams{
+		GameID:         gameId,
+		ShooterID:      shooterId,
+		ReceiverID:     uuid.MustParse(fmt.Sprintf("%v", st["receiver_id"])),
+		Damage:         interfaceToInt(st["shooter_damage"]),
+		ReceiverHealth: interfaceToInt(st["receiver_health"]),
+		ShooterHealth:  interfaceToInt(st["shooter_health"]),
+	})
+
+	if err != nil {
+		log.Errorf("failed while creating game log after the shot : %v", err)
+		return 0, err
+	}
+
+	val, ok := st["receiver_health_after"].(int32)
 	if !ok {
-		log.Error("failed interface converstion : %v", err)
+		log.Errorf("failed interface converstion : %v", err)
 		return 0, nil
 	}
 	return val, nil

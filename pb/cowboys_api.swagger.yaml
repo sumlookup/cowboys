@@ -4,7 +4,7 @@ openapiOptions:
     - file: "github.com/sumlookup/cowboys/pb/cowboys.proto"
       option:
         info:
-          title: Cowboys
+          title: Cowboys Service
           version: "1.0"
         schemes:
           - HTTPS
@@ -24,7 +24,7 @@ openapiOptions:
   service:
     - service: cowboys.CowboysService
       option:
-        description: "Module Tds service"
+        description: "Cowboys service"
   method:
     - method: cowboys.CowboysService.Run
       option:
@@ -41,7 +41,7 @@ openapiOptions:
         responses:
           "200":
             examples:
-              "application/json": '{}'
+              "application/json": '{"cowboys":[{"name":"John","health":10,"damage":1},{"name":"Bill","health":8,"damage":2},{"name":"Sam","health":10,"damage":1},{"name":"Peter","health":5,"damage":3},{"name":"Philip","health":15,"damage":1}]}'
     - method: cowboys.CowboysService.ShootAtRandom
       option:
         description: "Allows to shoot a random cowboy by providing shooter and receiver id"
@@ -50,3 +50,11 @@ openapiOptions:
           "200":
             examples:
               "application/json": '{}'
+    - method: cowboys.CowboysService.GetGameLogs
+      option:
+        description: "Allows to fetch logs for an intermediate level game"
+        summary: "Get Game Logs"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"game_logs":[{"id":"21027de8-319e-4278-a6e2-257c5efd65f1","created_at":"2023-12-09T21:51:32.245194Z","shooter_id":"29e302ed-93fb-4fd6-b436-61e3bbff7869","receiver_id":"cf707497-1d92-4171-97f5-7d986b176fcc","damage":1,"shooter_health":10,"receiver_health":5}],"page":0,"total_count":33}'

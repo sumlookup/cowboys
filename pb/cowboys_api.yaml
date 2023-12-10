@@ -14,3 +14,6 @@ http:
     - selector: cowboys.CowboysService.ShootAtRandom
       post: "/shoot"
       body: "*"
+
+    - selector: cowboys.CowboysService.GetGameLogs
+      get: "/logs/{game_id}"

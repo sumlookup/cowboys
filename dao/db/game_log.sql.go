@@ -11,37 +11,50 @@ import (
 	"github.com/google/uuid"
 )
 
-const createGameLog = `-- name: CreateGameLog :one
-INSERT INTO game_logs (game_id, shooter, receiver, damage) VALUES ($1, $2, $3, $4) RETURNING id::uuid
+const countAllGameLogs = `-- name: CountAllGameLogs :one
+SELECT count(*) as total_count FROM game_logs WHERE game_id = $1
+`
+
+func (q *Queries) CountAllGameLogs(ctx context.Context, gameID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countAllGameLogs, gameID)
+	var total_count int64
+	err := row.Scan(&total_count)
+	return total_count, err
+}
+
+const createGameLog = `-- name: CreateGameLog :exec
+INSERT INTO game_logs (game_id, shooter_id, receiver_id, damage, receiver_health, shooter_health) VALUES
+    ($1, $2, $3, $4, $5, $6)
 `
 
 type CreateGameLogParams struct {
-	GameID   uuid.UUID `json:"game_id"`
-	Shooter  uuid.UUID `json:"shooter"`
-	Receiver uuid.UUID `json:"receiver"`
-	Damage   int32     `json:"damage"`
+	GameID         uuid.UUID `json:"game_id"`
+	ShooterID      uuid.UUID `json:"shooter_id"`
+	ReceiverID     uuid.UUID `json:"receiver_id"`
+	Damage         int32     `json:"damage"`
+	ReceiverHealth int32     `json:"receiver_health"`
+	ShooterHealth  int32     `json:"shooter_health"`
 }
 
-func (q *Queries) CreateGameLog(ctx context.Context, arg CreateGameLogParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, createGameLog,
+func (q *Queries) CreateGameLog(ctx context.Context, arg CreateGameLogParams) error {
+	_, err := q.db.Exec(ctx, createGameLog,
 		arg.GameID,
-		arg.Shooter,
-		arg.Receiver,
+		arg.ShooterID,
+		arg.ReceiverID,
 		arg.Damage,
+		arg.ReceiverHealth,
+		arg.ShooterHealth,
 	)
-	var id uuid.UUID
-	err := row.Scan(&id)
-	return id, err
+	return err
 }
 
 const listGameLogsByGameId = `-- name: ListGameLogsByGameId :many
-SELECT id, created_at, updated_at, deleted_at, game_id, shooter, receiver, damage FROM game_logs WHERE game_id = $1 AND
-    deleted_at IS NULL
+SELECT id, created_at, game_id, shooter_id, receiver_id, damage, receiver_health, shooter_health FROM game_logs WHERE game_id = $1
 ORDER BY
     CASE WHEN $2::text = 'desc' THEN created_at END DESC,
     CASE WHEN $2::text = 'asc' THEN created_at END ASC
 LIMIT $4::int
-    OFFSET $3::int
+OFFSET $3::int
 `
 
 type ListGameLogsByGameIdParams struct {
@@ -68,12 +81,12 @@ func (q *Queries) ListGameLogsByGameId(ctx context.Context, arg ListGameLogsByGa
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
 			&i.GameID,
-			&i.Shooter,
-			&i.Receiver,
+			&i.ShooterID,
+			&i.ReceiverID,
 			&i.Damage,
+			&i.ReceiverHealth,
+			&i.ShooterHealth,
 		); err != nil {
 			return nil, err
 		}

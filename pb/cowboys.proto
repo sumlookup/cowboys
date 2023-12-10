@@ -9,28 +9,18 @@ option go_package = "github.com/sumlookup/cowboys/pb;cowboys";
 service CowboysService {
 
   rpc Run(RunRequest) returns (RunResponse){};
-  rpc ReloadDefaultCowboys(ReloadDefaultCowboysRequest) returns (ReloadDefaultCowboysResponse){};
 
-  rpc GetCowboyByName(GetCowboyByNameRequest) returns (GetCowboyByNameResponse){};
+  rpc ReloadDefaultCowboys(ReloadDefaultCowboysRequest) returns (ReloadDefaultCowboysResponse){};
 
   rpc ShootAtRandom(ShootAtRandomRequest) returns (ShootAtRandomResponse) {};
 
-  rpc Test(TestRequest) returns (TestResponse){}
-}
+  // bonus endpoint
+  rpc GetGameLogs(GetGameLogsRequest) returns (GetGameLogsResponse){};
 
-message TestRequest {
-  string id = 1;
 }
-message TestResponse{}
 
 message RunRequest {}
-
-message DamageExchange {
-  string from = 1;
-  string to = 2;
-  int32 value = 3;
-  google.protobuf.Timestamp created_at = 4;
-}
+message RunResponse {}
 
 message Cowboy {
   string name = 1;
@@ -38,31 +28,42 @@ message Cowboy {
   int32 damage = 3;
 }
 
-message RunResponse {
-  repeated DamageExchange damage_log = 1;
-  string winner = 2;
-}
-
 message ReloadDefaultCowboysRequest {}
-
 message ReloadDefaultCowboysResponse {
   repeated Cowboy cowboys = 1;
 }
 
-message GetCowboyByNameRequest {
-  string name = 1;
-}
-
-message GetCowboyByNameResponse {
-  Cowboy cowboy = 1;
-}
-
 message ShootAtRandomRequest {
   string shooter_id = 1;
-  string shooter_name = 2;
-  int32 shooter_damage = 3;
+  string game_id = 2;
+  string shooter_name = 3;
+  int32 shooter_damage = 4;
 }
 
 message ShootAtRandomResponse {
   int32 receiver_health = 1;
+}
+
+message GetGameLogsRequest {
+  string game_id = 1;
+  string sort = 2; // asc or desc -- by created_at
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GameLog {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  string shooter_id = 3;
+  string receiver_id = 4;
+  int32 damage = 5;
+  int32 shooter_health = 6;
+  int32 receiver_health = 7;
+
+}
+
+message GetGameLogsResponse {
+  repeated GameLog game_logs = 1;
+  int32 page = 2;
+  int32 total_count = 3;
 }
