@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS game_logs
 (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
-    updated_at TIMESTAMPTZ NULL,
-    deleted_at TIMESTAMPTZ NULL,
     game_id UUID NOT NULL,
-    shooter UUID NOT NULL,
-    receiver UUID NOT NULL,
-    damage INT NOT NULL
+    shooter_id UUID NOT NULL,
+    receiver_id UUID NOT NULL,
+    damage INT NOT NULL,
+    receiver_health INT NOT NULL,
+    shooter_health INT NOT NULL
 );
 
 -- +migrate Down

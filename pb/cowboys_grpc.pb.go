@@ -24,9 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type CowboysServiceClient interface {
 	Run(ctx context.Context, in *RunRequest, opts ...grpc.CallOption) (*RunResponse, error)
 	ReloadDefaultCowboys(ctx context.Context, in *ReloadDefaultCowboysRequest, opts ...grpc.CallOption) (*ReloadDefaultCowboysResponse, error)
-	GetCowboyByName(ctx context.Context, in *GetCowboyByNameRequest, opts ...grpc.CallOption) (*GetCowboyByNameResponse, error)
 	ShootAtRandom(ctx context.Context, in *ShootAtRandomRequest, opts ...grpc.CallOption) (*ShootAtRandomResponse, error)
-	Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error)
+	// bonus endpoint
+	GetGameLogs(ctx context.Context, in *GetGameLogsRequest, opts ...grpc.CallOption) (*GetGameLogsResponse, error)
 }
 
 type cowboysServiceClient struct {
@@ -55,15 +55,6 @@ func (c *cowboysServiceClient) ReloadDefaultCowboys(ctx context.Context, in *Rel
 	return out, nil
 }
 
-func (c *cowboysServiceClient) GetCowboyByName(ctx context.Context, in *GetCowboyByNameRequest, opts ...grpc.CallOption) (*GetCowboyByNameResponse, error) {
-	out := new(GetCowboyByNameResponse)
-	err := c.cc.Invoke(ctx, "/cowboys.CowboysService/GetCowboyByName", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *cowboysServiceClient) ShootAtRandom(ctx context.Context, in *ShootAtRandomRequest, opts ...grpc.CallOption) (*ShootAtRandomResponse, error) {
 	out := new(ShootAtRandomResponse)
 	err := c.cc.Invoke(ctx, "/cowboys.CowboysService/ShootAtRandom", in, out, opts...)
@@ -73,9 +64,9 @@ func (c *cowboysServiceClient) ShootAtRandom(ctx context.Context, in *ShootAtRan
 	return out, nil
 }
 
-func (c *cowboysServiceClient) Test(ctx context.Context, in *TestRequest, opts ...grpc.CallOption) (*TestResponse, error) {
-	out := new(TestResponse)
-	err := c.cc.Invoke(ctx, "/cowboys.CowboysService/Test", in, out, opts...)
+func (c *cowboysServiceClient) GetGameLogs(ctx context.Context, in *GetGameLogsRequest, opts ...grpc.CallOption) (*GetGameLogsResponse, error) {
+	out := new(GetGameLogsResponse)
+	err := c.cc.Invoke(ctx, "/cowboys.CowboysService/GetGameLogs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +79,9 @@ func (c *cowboysServiceClient) Test(ctx context.Context, in *TestRequest, opts .
 type CowboysServiceServer interface {
 	Run(context.Context, *RunRequest) (*RunResponse, error)
 	ReloadDefaultCowboys(context.Context, *ReloadDefaultCowboysRequest) (*ReloadDefaultCowboysResponse, error)
-	GetCowboyByName(context.Context, *GetCowboyByNameRequest) (*GetCowboyByNameResponse, error)
 	ShootAtRandom(context.Context, *ShootAtRandomRequest) (*ShootAtRandomResponse, error)
-	Test(context.Context, *TestRequest) (*TestResponse, error)
+	// bonus endpoint
+	GetGameLogs(context.Context, *GetGameLogsRequest) (*GetGameLogsResponse, error)
 	mustEmbedUnimplementedCowboysServiceServer()
 }
 
@@ -104,14 +95,11 @@ func (UnimplementedCowboysServiceServer) Run(context.Context, *RunRequest) (*Run
 func (UnimplementedCowboysServiceServer) ReloadDefaultCowboys(context.Context, *ReloadDefaultCowboysRequest) (*ReloadDefaultCowboysResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReloadDefaultCowboys not implemented")
 }
-func (UnimplementedCowboysServiceServer) GetCowboyByName(context.Context, *GetCowboyByNameRequest) (*GetCowboyByNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCowboyByName not implemented")
-}
 func (UnimplementedCowboysServiceServer) ShootAtRandom(context.Context, *ShootAtRandomRequest) (*ShootAtRandomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShootAtRandom not implemented")
 }
-func (UnimplementedCowboysServiceServer) Test(context.Context, *TestRequest) (*TestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
+func (UnimplementedCowboysServiceServer) GetGameLogs(context.Context, *GetGameLogsRequest) (*GetGameLogsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGameLogs not implemented")
 }
 func (UnimplementedCowboysServiceServer) mustEmbedUnimplementedCowboysServiceServer() {}
 
@@ -162,24 +150,6 @@ func _CowboysService_ReloadDefaultCowboys_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CowboysService_GetCowboyByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCowboyByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CowboysServiceServer).GetCowboyByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/cowboys.CowboysService/GetCowboyByName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CowboysServiceServer).GetCowboyByName(ctx, req.(*GetCowboyByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _CowboysService_ShootAtRandom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ShootAtRandomRequest)
 	if err := dec(in); err != nil {
@@ -198,20 +168,20 @@ func _CowboysService_ShootAtRandom_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CowboysService_Test_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TestRequest)
+func _CowboysService_GetGameLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGameLogsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CowboysServiceServer).Test(ctx, in)
+		return srv.(CowboysServiceServer).GetGameLogs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cowboys.CowboysService/Test",
+		FullMethod: "/cowboys.CowboysService/GetGameLogs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CowboysServiceServer).Test(ctx, req.(*TestRequest))
+		return srv.(CowboysServiceServer).GetGameLogs(ctx, req.(*GetGameLogsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -232,16 +202,12 @@ var CowboysService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CowboysService_ReloadDefaultCowboys_Handler,
 		},
 		{
-			MethodName: "GetCowboyByName",
-			Handler:    _CowboysService_GetCowboyByName_Handler,
-		},
-		{
 			MethodName: "ShootAtRandom",
 			Handler:    _CowboysService_ShootAtRandom_Handler,
 		},
 		{
-			MethodName: "Test",
-			Handler:    _CowboysService_Test_Handler,
+			MethodName: "GetGameLogs",
+			Handler:    _CowboysService_GetGameLogs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

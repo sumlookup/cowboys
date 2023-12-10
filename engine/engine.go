@@ -14,13 +14,13 @@ import (
 var (
 	ENGINE_MODE_BASIC        = "basic"
 	ENGINE_MODE_INTERMEDIATE = "intermediate"
-	ENGINE_MODE_ADVANCED     = "advanced"
+	ENGINE_MODE_ADVANCED     = "advanced" // Had big dreams with this project
 )
 
 type CowboysEngine interface {
 	Run(ctx context.Context) error
 	StartGame(ctx context.Context, id, gameId uuid.UUID, name string) error
-	ShootRandomCowboy(ctx context.Context, shooterId uuid.UUID, shooterName string, shooterDmg int32) (int32, error)
+	ShootRandomCowboy(ctx context.Context, shooterId, gameId uuid.UUID, shooterName string, shooterDmg int32) (int32, error)
 	SetWinner(ctx context.Context, name string, winnerId, gameId uuid.UUID) error
 	GameMode() string
 }

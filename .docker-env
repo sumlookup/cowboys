@@ -1,0 +1,10 @@
+export SERVER_PORT=8081
+export STATIC_SELECTOR_PORT_NUMBER=8081
+export HTTP_PORT=9090
+export SELECTOR=static
+export REGISTRY=memory
+export ENV=dev
+export DB_URL=postgresql://root@cockroach:26257/defaultdb?sslmode=disable
+
+#export ENV_STATIC_SELECTOR_ENVMOD="f"
+#export STATIC_SELECTOR_SUFFIX="[env]"

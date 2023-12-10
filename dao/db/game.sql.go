@@ -23,7 +23,7 @@ func (q *Queries) CreateGame(ctx context.Context, mode string) (uuid.UUID, error
 }
 
 const getGameById = `-- name: GetGameById :one
-SELECT id, created_at, updated_at, deleted_at, mode, winner, winner_id, ended FROM games WHERE id = $1 AND deleted_at IS NULL
+SELECT id, created_at, deleted_at, mode, winner, winner_id, ended FROM games WHERE id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetGameById(ctx context.Context, id uuid.UUID) (*Game, error) {
@@ -32,7 +32,6 @@ func (q *Queries) GetGameById(ctx context.Context, id uuid.UUID) (*Game, error) 
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
-		&i.UpdatedAt,
 		&i.DeletedAt,
 		&i.Mode,
 		&i.Winner,

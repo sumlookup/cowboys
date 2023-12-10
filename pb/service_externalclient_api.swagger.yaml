@@ -1,0 +1,3927 @@
+
+openapiOptions:
+  file:
+    - file: "gitlab.com/clowd9/dev/sirius/external/client/pb/service_externalclient.proto"
+      option:
+        info:
+          title: CLOWD9 API
+          contact:
+            email: admin@clowd9.com
+          extensions:
+            x-logo:
+              url: "/logo.png"
+        schemes:
+          - HTTPS
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        responses:
+          "400":
+            description: "When provided data is incorrect"
+            examples:
+              "application/json": '{"code": 401, "message": "Unauthorized", "details": []}'
+          "401":
+            description: When access token is not provided, incorrect or expired
+            examples:
+              "application/json": '{"code": 401, "message": "Unauthorized", "details": []}'
+          "403":
+            description: When access token provided does not have access to a resource
+            examples:
+              "application/json": '{"code": 403,"message": "You do not have correct access rights","details": []}'
+        securityDefinitions:
+          security:
+            Bearer:
+              type: TYPE_API_KEY
+              description: 'Authentication token, prefixed by Bearer: Bearer <token>'
+              in: IN_HEADER
+              name: "Authorization"
+        security:
+          - securityRequirement:
+              Bearer: {}
+        host: "client.api.uat.apps-clowd9.io"
+        extensions:
+          x-uuid-pattern: &pattern_uuid "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+          x-uuid-example: &example_uuid '"9fc53743-247b-185f-8720-13be7ac028b6"'
+          x-card-example: &example_card '{"card_id":"07ff5f2b-ea69-458c-9980-2f3d0b413c15","secure_id":"c1def328-d491-4174-adf9-bb21d22833f4","format":"virtual","Pin":"123456","valid_from_date":"2022-08-03T16:55:51.532828Z","expiry_date":"2026-08-03T16:55:51.532828Z"}'
+          x-delivery-example: &example_delivery '{"delivery":{"bulk_address_id":"61d87137-42d4-418f-b3cb-fa51fcec1111","fulfil1":"fulfil1","fulfil2":"fulfil2","card_delivery_ref":"card_delivery_ref","envelope_ref":"envelope_ref","carrier_ref":"carrier_ref","carrier_language_ref":"carrier_language_ref","design_ref":"design_ref_test","contact":{"title":"Mr","first_name":"Alan","last_name":"Turing","phone_number":"+447999999999","email":"alan.turing@clowd9.com"},"address":{"post_code":"CM75SL","city":"Braintree","state_county_or_province":"Essex","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Up The Hill"}}}'
+          x-trace-id-options: &trace_id_options
+            description: "The identifier used to track the API request"
+            pattern: *pattern_uuid
+            min_length: 36
+            example: *example_uuid
+          x-tagGroups:
+            - name: ""
+              tags:
+                - General
+                - Card Management
+                - Card Configuration Management
+                - Customers Management
+                - Report
+                - List
+            - name: Webhook
+              tags:
+                - Transaction
+  message:
+    - message: externalclient.HealthCheckRequest
+    - message: externalclient.HealthCheckResponse
+      option:
+        example: '{"status": "ok"}'
+    - message: externalclient.AuthenticateRequest
+      option:
+        example: '{"key": "yigGiolSZ8pYOg06IsLQnXAyn1RXxy4S", "secret": "5kA8hzeF5nzQ0fQmq4oqWtv5Wlxjd4lh"}'
+    - message: externalclient.AuthenticateResponse
+    - message: externalclient.FindAuditLogsRequest
+      option:
+        example: '{"actor_id":"1cc53743-247b-185f-8720-13be7ac028b6", "actor_type":"api", "date_from":"2022-03-03T16:55:51.532828Z", "date_to":"2022-08-03T16:55:51.532828Z", "sort":"asc", "limit":20, "offset":0}'
+    - message: externalclient.AuditLog
+      option:
+        example: '{}'
+    - message: externalclient.FindAuditLogsResponse
+    - message: externalclient.GetAuditLogRequest
+    - message: externalclient.GetCardResponse
+      option:
+        example: '{"card":{"card_id":"5f3b54da-7533-446d-b08a-eb2516f2cf56","format":"physical","card_status":"active","thermal_line1":"John Doe","thermal_line2":"Hello","emboss_name":"John Doe","emboss_line4":"Hello"},"program_id":"a2732e34-19e2-48c7-b009-5b4952f1bbd6","product_id":"09d56751-2758-4926-a653-ee8779ffe4ff","trace_id":"1881365595931924644","customer_id":"301ae4fa-f3c2-4c56-bbb5-264cc6f12fba","delivery":{"bulk_address_id":"61d87137-42d4-418f-b3cb-fa51fcec1111","fulfil1":"clientFulfilMessage1","fulfil2":"clientFulfilMessage2","card_delivery_ref":"card_delivery_ref_test","envelope_ref":"envelopeReference","carrier_ref":"carrierReference","carrier_language_ref":"carrierLanguageReference","design_ref":"design_ref_test"}}'
+    - message: externalclient.CreateCardRequest
+      option:
+        example: '{"product_id":"9fc53743-247b-185f-8720-13be7ac028b6","card_manufacturer_id":"859247eb-8205-45bb-bad3-18d041f63f91","customer_id":"859247eb-8205-45bb-bad3-18d041f63f91","account_ids":["120955ee-81b4-48fd-bc96-8dfde5438fa2"],"delivery":{"fulfil1":"client_fulfil_message1","fulfil2":"client_fulfil_message2","card_delivery_ref":"deliveryReference","envelope_ref":"envelopeReference","carrier_ref":"carrierReference","carrier_lang_ref":"carrierLanguageReference","design_ref":"designReference","bulk_address_id":"120955ee-81b4-48fd-bc96-8dfde5438fa2","address":{"post_code":"CM75SL","city":"Braintree","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Up The Hill"},"contact":{"title":"Mr","first_name":"Alan","last_name":"Turing","phone_number":"+447999999999","email":"alan.turing@clowd9.com"}},"three_ds":{"additional_data":{"securityQuestion":"3DSSecurityQuestion","securityAnswer":"3DSSecurityAnswer"},"language_code":"en_US"},"card":{"format":"physical","thermal_line1":"testline1","thermal_line2":"testline2","emboss_name":"Alan Turing","emboss_line4":"test","card_status":"active","pin":"1234","expiry_date":"2026-08-03T16:55:51.532828Z","valid_from_date":"2022-08-03T16:55:51.532828Z"}}'
+    - message: externalclient.CreateCardResponse
+      option:
+        example: '{"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","cardDetails":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","pin":"1234","pan":"5123450069656229","cvv":"400","expiry":"06/23","valid_from":"06/22"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","secure_id":"c4ed6c79-640e-42a6-b842-1caad2663677"}'
+    - message: externalclient.SetCardStatusRequest
+      option:
+        example: '{"status": "lost", "note":"Customer has lost the card"}'
+    - message: externalclient.SetCardStatusResponse
+      option:
+        example: '{"card_id": "64553ef1-5e91-4a68-b444-a69fb53de555", "new_card_status":"lost", "old_card_status":"active", "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.FindCardsByCustomerIdRequest
+      option:
+        example: '{}'
+    - message: externalclient.FindCardsByCustomerIdResponse
+      option:
+        example: '{"cards": [{"id": "1cc53743-247b-185f-8720-13be7ac028b6", "format": "physical", "thermal_line1": "John Doe", "thermal_line2": "Hello", "emboss_name": "John Doe", "emboss_line4": "Hello", "card_status": "created", "production_status": "new"}]}'
+    - message: externalclient.GetSecureCardDetailsRequest
+      option:
+        example: '{"customer_id":"975b47ef-196f-4791-a4d9-4439baff577a","secure_id":"92f8eb65-544d-474f-8613-7a11a3315aef","card_id":"6e079dcb-fa3f-4769-b498-a86a3bc91407","encrypted_cipher":"NmUwNzlkY2ItZmEzZi00NzY5LWI0OTgtYTg2YTNiYzkxNDA3"}'
+    - message: externalclient.GetSecureCardDetailsResponse
+      option:
+        example: '{"pin": "3232", "pan": "5123450043156544", "cvv": "544"}'
+    - message: externalclient.ReissueCardRequest
+      option:
+        example: '{"card_id":"1392e2aa-5e40-4967-b2c0-ac59d5aa61b1","secure_id":"f5cf218d-24b1-45ea-9491-51e229213eb9","card":{"card_id":"07ff5f2b-ea69-458c-9980-2f3d0b413c15","secure_id":"c1def328-d491-4174-adf9-bb21d22833f4","format":"virtual","Pin":"123456","valid_from_date":"2022-08-03T16:55:51.532828Z","expiry_date":"2026-08-03T16:55:51.532828Z"},"delivery":{"bulk_address_id":"61d87137-42d4-418f-b3cb-fa51fcec1111","fulfil1":"fulfil1","fulfil2":"fulfil2","card_delivery_ref":"card_delivery_ref","envelope_ref":"envelope_ref","carrier_ref":"carrier_ref","carrier_language_ref":"carrier_language_ref","design_ref":"design_ref_test","contact":{"title":"Mr","first_name":"Alan","last_name":"Turing","phone_number":"+447999999999","email":"alan.turing@clowd9.com"},"address":{"post_code":"CM75SL","city":"Braintree","state_county_or_province":"Essex","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Up The Hill"}}}'
+    - message: externalclient.ListCardTransactionsRequest
+      option:
+        example: '{"date_from":"2022-04-30T12:32:39.915806Z","date_to":"2022-06-30T12:32:39.915806Z","card_id":"64553ef1-5e91-4a68-b444-a69fb53de555","transaction_types":["online"],"spend_type":"spend_type","limit":10,"offset":2}'
+    - message: externalclient.LinkCardToAccountRequest
+      option:
+        example: '{"account_id":"52353ef1-5e91-4a68-b444-a69fb53de322"}'
+    - message: externalclient.OnboardCardRequest
+      option:
+        example: '{"product_id":"359247eb-8205-45bb-bad3-18d041f63f94","card_manufacturer_id":"859247eb-8205-45bb-bad3-18d041f63f91","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","wallet_name":"TestWallet","delivery":{"fulfil1":"clientFulfilMessage1","fulfil2":"clientFulfilMessage2","card_delivery_ref":"deliveryReference","envelope_ref":"envelopeReference","carrier_ref":"carrierReference","carrier_lang_ref":"carrierLanguageReference","design_ref":"designReference","bulk_address_id":"1cc53743-247b-185f-8720-13be7ac028b6","address":{"post_code":"CM75SL","city":"Braintree","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Up The Hill"},"contact":{"title":"Mr","first_name":"Alan","last_name":"Turing","phone_number":"+447999999999","email":"alan.turing@clowd9.com"}},"customer":{"title":"Mr","first_name":"Alan","middle_name":"Mathison","last_name":"Turing","date_of_birth": "24/10/1981", "phone_number":"+447999999999","email":"alan.turing@clowd9.com","address":{"post_code":"CM75SL","city":"Braintree", "state_county_or_province":"Essex", "country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Up The Hill"},  "identification": {"identification_type_1": "passport","identification_id_1": "ASDFG1234","identification_1_country":"GBR", "identification_1_state":"Essex", "identification_type_2": "idcard", "identification_id_2": "JKVMK3490", "identification_2_country":"GBR", "identification_2_state":"Essex"}},"three_ds":{"additional_data":{"securityQuestion":"3DSSecurityQuestion","securityAnswer":"3DSSecurityAnswer"},"language_code":"en_US"},"card":{"format":"physical","thermal_line1":"testline1","thermal_line2":"testline2","emboss_name":"Alan Turing","emboss_line4":"test","card_status":"active","pin":"1234","expiry_date":"26/02","valid_from_date":"23/02"}}'
+    - message: externalclient.OnboardCardResponse
+      option:
+        example: '{"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","cardDetails":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","pin":"1234","pan":"5123450069656229","cvv":"400","expiry":"06/23","valid_from":"06/22"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","secure_id":"c4ed6c79-640e-42a6-b842-1caad2663677"}'
+    - message: externalclient.GetClientRequest
+      option:
+        example: '{"client_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+    - message: externalclient.ListClientsRequest
+      option:
+        example: '{"client_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+    - message: externalclient.CreateCustomerRequest
+      option:
+        example: '{"customer_id":"9fc53743-247b-185f-8720-13be7ac028b6", "customer":{"title":"Mr","first_name":"Alan","middle_name":"Mathison","last_name":"Turing", "date_of_birth": "24/10/1981", "phone_number":"+447599999999","email":"alan.turing@clowd9.com","external_ref":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e", "language_code":"en-US", "address":{"post_code":"CM75SL","city":"Braintree","state_county_or_province":"Essex", "country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"Green House","address_line3":"Side 3"}, "identification": {"identification_type_1": "passport","identification_id_1":"ASDFG1234","identification_1_country":"GBR", "identification_1_state":"Essex", "identification_type_2": "idcard","identification_id_2":"JKVMK3490","identification_2_country":"GBR", "identification_2_state":"Essex"}}, "client_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+    - message: externalclient.CreateCustomerResponse
+      option:
+        example: '{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetSecureFrameKeyRequest
+      option:
+        example: '{"client_id": "e5ebce91-cdd4-4215-8fc1-dc6b240563f1"}'
+    - message: externalclient.GetSecureFrameKeyResponse
+      option:
+        example: '{"key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCL42zoggnL+2dTRUjwbNN0qua66eyYFtGCpWASK7Da6NBsVt6tz3HfqTTuCLI+"}'
+    - message: externalclient.UpdateCustomerRequest
+      option:
+        example: '{"client_id":"9fc53743-247b-185f-8720-13be7ac028b6","customer":{"title":"MR","first_name":"Alan","middle_name":"Mathison","last_name":"Turing","phone_number":"+447599999999","email":"alan.turing@clowd9.com", "language_code":"en-US", "address":{"post_code":"CM75SL","city":"CM75SL","state_county_or_province":"Essex","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"99 Church Meadows","address_line3":"Green House"}}}'
+    - message: externalclient.UpdateCustomerResponse
+      option:
+        example: '{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetCustomerRequest
+      option:
+        example: &get_customer_request '{"client_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetCustomerResponse
+      option:
+        example: &get_customer_response '{"customer":{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","first_name":"Alan","last_name":"Turing","date_of_birth": "24/10/1981","middle_name":"Mathison","address":{"post_code":"CM75SL","city":"CM75SL","state_county_or_province":"Essex","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"99 Church Meadows","address_line3":"Green House"},"phone_number":"+447460999999","email":"alan.turing@clowd9.com","title":"Dr","external_ref":"ext_123","identification": {"identification_type_1": "passport","identification_id_1":"ASDFG1234","identification_1_country":"GBR", "identification_1_state":"Essex", "identification_type_2": "idcard","identification_id_2":"JKVMK3490","identification_2_country":"GBR", "identification_2_state":"Essex"}},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetCustomerByExternalRefRequest
+      option:
+        example: '{"client_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetCustomerByExternalRefResponse
+      option:
+        example: *get_customer_response
+    - message: externalclient.ListCustomersRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","sort":"desc","limit":2,"offset":1}'
+    - message: externalclient.ListCustomersResponse
+      option:
+        example: '{"customers":[{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","first_name":"Alan","last_name":"Turing","middle_name":"Mathison","address":{"post_code":"CM75SL","city":"CM75SL","state_county_or_province":"Essex","country_iso":"CM75SL","address_line1":"99 Church Meadows","address_line2":"99 Church Meadows","address_line3":"Green House"},"phone_number":"+447460999999","email":"alan.turing@clowd9.com","title":"Dr","external_ref":"ref_123", "language_code":"en-US"}],"pagination":{"total_count":"1","page":"1"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.ListCardStatusesResponse
+      option:
+        example: '{"card_statuses":["active", "blocked", "created", "disabled", "lost", "stolen", "expired"], "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.ListCurrencyCodesResponse
+      option:
+        example: '{"currency_codes":{"AED":"784","AFN":"971","ALL":"008","AMD":"051","ANG":"532"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.CreateBulkAddressRequest
+      option:
+        example: '{"post_code":"test","city":"city","country":"test_country","address_line1":"test_ad1","address_line2":"test_ad2","address_line3":"test_ad3","title":"test_title","first_name":"test_first","last_name":"test_last","phone_number":"test_phone","email":"test_email","middle_name":"test_mid","bulk_ref":"test_ext_ref"}'
+    - message: externalclient.UpdateBulkAddressRequest
+      option:
+        example: '{"post_code":"updated_postcode","city":"city","country":"updated_country","address_line1":"updated_ad1","address_line2":"updated_ad2","address_line3":"updated_ad3","title":"updated_title","first_name":"updated_first","last_name":"updated_last","phone_number":"updated_phone","email":"updated_email","middle_name":"updated_middle","bulk_ref":"updated_ext"}'
+    - message: externalclient.GetTdsTransactionsRequest
+      option:
+        example: '{"start_date":"2022-01-30T09:30:10Z","end_date":"2022-05-30T09:30:10Z","limit":10}'
+    - message: externalclient.GetTdsTransactionsResponse
+      option:
+        example: '{"card_id":"5f7831b8-95b1-4fbb-b3f8-4d39ee73e5d7","total_count":"1","transactions":{"netcetera":[{"card_id":"netceteraCard1","card_state":{"is_active":true,"is_enrolled":true,"is_deleted":false,"isLocked":false},"acs_trx_id":"20d5ccb4-2918-49cc-a458-507bd3c74e33","ds_trx_id":"20d5ccb4-2918-49cc-a458-507bd3c74e32","authentication_start_date":"2002-05-30T09:30:10Z","authentication_end_date":"2002-05-30T09:30:10Z","challenge_start_date":"2002-05-30T09:30:10Z","challenge_end_date":"2002-05-30T09:30:10Z","merchant_data":{"merchant_country_code":"826","acquirer_country_code":"","merchant_name":"amazon"},"purchase_data":{"purchase_amount":"200.00","purchase_exponent":"2","purchase_currency":"GBP","purchase_date":"2002-05-30T09:30:10Z"},"protocol_version":"v1","transaction_status":"Y","transaction_status_reason":"ok","risk_advice":"none","authentication_method":"otp_sq","challenge_method":"OTP_SQ","exemption_data":{"exemption_id":"1","exemption_parameters":[{"key":"exempt","value":"yes"}]},"challenge_actions":{"challenge_action":[{"challenge_action_id":"","timestamp":"2002-05-30T09:30:10Z","text_param":[{"key":"testkey","value":"testValue"}]}]}}]},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.GetTdsCardEnrolmentDataResponse
+      option:
+        example: '{"cards":{"netcetera":[{"cardNumber":"5123450079563431","languageCode":"en_US","isLocked":false,"is_active":true,"card_id":"18ef9392-bd29-4f40-8b22-3f756977b887","netcetera_card_Id":"xCTN63CTSMijepXRtvsjniNvZWA=","issuerConfigParam":[{"paramName":"primaryAuthenticationType","paramValue":"SDF_OTP_SQ_EXT"}]}]},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - message: externalclient.FindTdsLogsRequest
+      option:
+        example: '{"sort":"desc","limit":2,"offset":1}'
+    - message: externalclient.EnrolTdsCardRequest
+      option:
+        example: '{"three_ds":{"additional_data":{"securityQuestion":"secQ","securityAnswer":"secA"},"language_code":"en_US"}}'
+    - message: externalclient.GetWalletProductRequest
+      option:
+        example: '{"wallet_product_id":"9b056d22-e93a-4d3e-86ab-a52d25bfc89d", "client_id":"10cb50de-5708-4967-ba95-79f587ba5e7d"}'
+    - message: externalclient.ListWalletProductsRequest
+      option:
+        example: '{"client_id":"10cb50de-5708-4967-ba95-79f587ba5e7d"}'
+    - message: externalclient.CreateCustomerWalletRequest
+      option:
+        example: '{"wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_customer","active":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"}'
+    - message: externalclient.GetCustomerWalletRequest
+      option:
+        example: '{}'
+    - message: externalclient.ListCustomerWalletsRequest
+      option:
+        example: '{}'
+    - message: externalclient.CreateCustomerAccountRequest
+      option:
+        example: '{"name":"test_customer_account","active":true,"symbol":"826","default":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","customer_id":"f4bdd1a4-5999-4723-bcde-0581a613d74a","wallet_id":"f3bdd1a4-5999-4723-bcde-0581a613d74a","parent_account_id":"f5bdd1a4-5999-4723-bcde-0581a613d74a","config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}},"iso_code":"00"}'
+    - message: externalclient.GetCustomerAccountRequest
+      option:
+        example: '{}'
+    - message: externalclient.ListCustomerAccountsRequest
+      option:
+        example: '{}'
+    - message: externalclient.FindAccountHistoryRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","sort":"desc","limit":2,"offset":1}'
+    - message: externalclient.LoadCustomerAccountBalanceRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":2000}'
+    - message: externalclient.SpendFromCustomerAccountRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":150}'
+    - message: externalclient.UpdateCustomerAccountBalanceRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":4000}'
+    - message: externalclient.UpdateCustomerWalletRequest
+      option:
+        example: '{"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","active":false,"name":"new_wallet_name"}'
+    - message: externalclient.UpdateCustomerAccountRequest
+      option:
+        example: '{"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","active":false,"default":false}'
+    - message: externalclient.CreateClientWalletRequest
+      option:
+        example: '{"wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_wallet_name","active":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"}'
+    - message: externalclient.GetClientWalletRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3"}'
+    - message: externalclient.ListClientWalletsRequest
+      option:
+        example: '{}'
+    - message: externalclient.CreateClientAccountRequest
+      option:
+        example: '{"name":"test_account","active":true,"symbol":"826","default":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}},"iso_code":"00"}'
+    - message: externalclient.GetClientAccountRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3"}'
+    - message: externalclient.ListClientAccountsRequest
+      option:
+        example: '{}'
+    - message: externalclient.FindClientAccountHistoryRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","sort":"desc","limit":2,"offset":1}'
+    - message: externalclient.LoadClientAccountBalanceRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":2000}'
+    - message: externalclient.SpendFromClientAccountRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":150}'
+    - message: externalclient.UpdateClientAccountBalanceRequest
+      option:
+        example: '{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","amount":4000}'
+    - message: externalclient.UpdateClientWalletRequest
+      option:
+        example: '{"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","active":false,"name":"test_wallet_2"}'
+    - message: externalclient.UpdateClientAccountRequest
+      option:
+        example: '{"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","active":false,"default":false}'
+    - message: externalclient.GetCardDetailsRequest
+      option:
+        example: '{"secure_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a"}'
+    - message: externalclient.ListCardUsageSetsResponse
+      option:
+        example: &list_card_usage_set_response '{"usage_sets": [{"card_usage_id": "1415aab5-ccb9-4178-b257-e22835aacb09", "name": "Approve if AVS match fails", "description": "TRUE - transaction can be approved even if AVS fails, FALSE - decline transaction base on AVS fails", "default_decision": false, "customer_change": false}], "total_size": "23"}'
+    - message: externalclient.ListCardUsageSetsRequest
+      option:
+        example: &list_card_usage_set_request '{"page":0, "limit":50}'
+
+    - message: externalclient.UpgradeCardVirtualRequest
+      option:
+        example: '{"card_upgrade":{"card_id":"bd27692d-4aff-4130-9962-11542283aa7d","new_card_id":"1959fa13-55f3-4322-9276-72b706b1a8e0","secure_id":"504c9c1f-e378-45ec-8700-19e9b6407cb0","card_status":"active","pin":"pin","expiry":"22/10"},"card_manufacturer_id":"67c7961e-fb74-40c3-bfae-a98418744831","delivery":{"thermal_line1":"thermal_line1","thermal_line2":"thermal_line2","emboss_name":"emboss_name","emboss_line4":"emboss_line4","fulfil1":"fulfil1","fulfil2":"fulfil2","card_delivery_ref":"card_delivery_ref","envelope_ref":"envelope_ref","carrier_ref":"carrier_ref","carrier_lang_ref":"carrier_lang_ref","design_ref":"design_ref","bulk_address_id":"35bcf177-547c-46ae-bd6c-738faee2d87f","address":{"address_line1":"address_line1","address_line2":"address_line2","address_line3":"address_line3","city":"city","state_county_or_province":"state_county_or_province","post_code":"post_code","country_iso":"POL"},"contact":{"title":"title","first_name":"first_name","middle_name":"middle_name","last_name":"last_name","phone_number":"phone_number","email":"email@email.com"}},"three_ds":{"additional_data":{"securityQuestion":"securityQuestion","securityAnswer":"securityAnswer"},"language_code":"en_US"}}'
+
+    - message: externalclient.UpgradeCardVirtualResponse
+      option:
+        example: '{"card_details":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","pin":"1234","pan":"5123450069656229","cvv":"400","expiry_date":"06/23","valid_from_date":"06/22"},"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+
+
+  method:
+    - method: externalclient.ClientExternalService.GetClient
+      option:
+        description: "The Get Client API request allows for the retrieval of a client details."
+        summary: "Get Client"
+        tags:
+          - Client Management
+        external_docs:
+          url: "https://github.com/grpc-ecosystem/grpc-gateway"
+          description: "Find out more Echo"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"client":{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3", "client_name":"Test client", "client_level": "issuer"}}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"client id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListClients
+      option:
+        description: The List Clients API request allows for the retrieval of all sub clients.
+        summary: List Clients
+        tags:
+          - Client Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"clients":[{"client_id":"c9f38755-ad34-44c5-842b-b0048f4303d3","client_name":"Test client","client_level":"issuer"}]}'
+
+    - method: externalclient.ClientExternalService.ListWalletProducts
+      option:
+        description: "Returns a list of wallet product"
+        summary: "List Wallet Products"
+        tags:
+          - "Client Wallets"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet_products":[{"wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","ref":"","name":"wallet_sandbox","default":true,"config":{"allowed_symbols":["826","840","978"],"default_symbols":["826"],"default_account_symbol":"826","symbol_orders":[{"symbol":"826","orders":["840","978"]}],"account_entity_types":["card"],"spend_controls":[{"symbol":"826","limit_day":"50000","limit_week":"200000","limit_month":"500000"}]}}],"total_count":"1", "trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateClientWallet
+      option:
+        description: "Create new client wallet"
+        summary: "Create Client Wallet"
+        tags:
+           - "Client Wallets"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_wallet_name","active":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"}, "trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetClientWallet
+      option:
+        description: "Returns customer wallet information"
+        summary: "Get Client Wallet"
+        tags:
+          - "Client Wallets"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_wallet_name","active":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"}, "trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListClientWallets
+      option:
+        description: "Allows to find client wallets. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination"
+        summary: "List Client Wallets"
+        tags:
+          - "Client Wallets"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallets":[{"wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_wallet_name","active":true,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"}],"pagination":{"totalCount":"1","page":"1"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateClientWallet
+      option:
+        description: "Allows to update client wallet. The API provides the opportunity to update client wallet active status and change the name of the wallet"
+        summary: "Update Client Wallet"
+        tags:
+          - "Client Wallets"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_wallet_2","active":false,"client_id":"f7bdd1a4-5999-4723-bcde-0581a613d74a","group":"fiat"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateClientAccount
+      option:
+        description: "Allows to create client account for a wallet"
+        summary: "Create Client Account"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"75ba049e-f573-40b7-92f1-24139a28e528","wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","name":"test_account","active":true,"symbol":"826","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListClientAccounts
+      option:
+        description: "Allows to find client wallet accounts. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination"
+        summary: "List Client Accounts"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"accounts":[{"account_id":"75ba049e-f573-40b7-92f1-24139a28e528","wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","name":"test_account","active":true,"symbol":"826","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}}],"pagination":{"totalCount":"1","page":"1"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetClientAccount
+      option:
+        description: "Retrieves account belonging to the wallet"
+        summary: "Get Client Account"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"75ba049e-f573-40b7-92f1-24139a28e528","wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","name":"test_account","active":true,"symbol":"826","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.FindClientAccountHistory
+      option:
+        description: "List account history. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination"
+        summary: "Find Client Account History"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":[{"current_balance":"0","change_amount":"2000","balance_after_change":"2000","status":"approved","created_at":"2022-06-30T12:30:50.999714Z"}],"pagination":{"total_count":"1","page":"1"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.SpendFromClientAccount
+      option:
+        description: "Allows spend funds from client account"
+        summary: "Spend From Client Account"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"2000","change_amount":"150","balance_after_change":"1850","status":"approved","created_at":"2022-06-30T12:32:39.915806Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateClientAccountBalance
+      option:
+        description: "Allows set the balance on the client account"
+        summary: "Update Client Account Balance"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"1850","change_amount":"4000","balance_after_change":"4000","status":"approved","created_at":"2022-06-30T12:34:08.808564Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateClientAccount
+      option:
+        description: "Allows to update client account. The API provides the opportunity to update client account active status and default status"
+        summary: "Update Client Account"
+        tags:
+          - Client Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"75ba049e-f573-40b7-92f1-24139a28e528","wallet_id":"c9e5e201-b534-4bf0-9135-3900317c26c9","name":"test_account","active":false,"number":"","symbol":"826","available_balance":"500000","ledger_balance":"0","exponent":"2","default":false,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}},"iso_code":"00"},"trace_id":"f7bdd1a4-5999-4723-bcde-0581a613d73a"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListCustomers
+      option:
+        description: "The List Customers API allows for the retrieval of customer records. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination."
+        summary: "List Customers"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"customers":[{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","first_name":"Alan","last_name":"Turing","middle_name":"Mathison","address":{"post_code":"CM75SL","city":"CM75SL","country_iso":"GBR","address_line1":"99 Church Meadows","address_line2":"99 Church Meadows","address_line3":"Green House"},"phone_number":"+447460999999","email":"alan.turing@clowd9.com","title":"Dr","external_ref":"ref_123", "language_code":"en-US"}],"pagination":{"total_count":"1","page":"1"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":400, "message":"cant get customers by query, reason ***", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateCustomer
+      option:
+        description: "Create the Customer that is linked to the client_id identified by the API KEY. Alternatively provide a different client_id. Created customers are shared across multiple programs that are linked to the same client."
+        summary: "Create Customer"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"customer_id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"address is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetSecureFrameKey
+      option:
+        description: "Provides public key that is used by customers to retrieve card details"
+        summary: "Get Customer Key"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCL42zoggnL+2dTRUjwbNN0qua66eyYFtGCpWASK7Da6NBsVt6tz3HfqTTuCLI+"}'
+          "400":
+            examples:
+              "application/json": '{"code":500, "message":"Invalid authentication details", "details":[]}'
+
+    - method: externalclient.ClientExternalService.FindCardsByCustomerId
+      option:
+        description: "Returns a list of cards that belong to the customer"
+        summary: "Find Cards By Customer Id"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"cards":[{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","format":"physical","thermal_line1":"testline1","thermal_line2":"testline2","emboss_name":"David M","emboss_line4":"test","card_status":"inactive","production_status":"new","valid_from":"2022-06-30T12:30:50.999714Z"}],"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":400, "message":"cant create card, reason ***", "details":[]}'
+    - method: externalclient.ClientExternalService.UpdateCustomer
+      option:
+        description: "Update the Customer."
+        summary: "Update Customer"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"id":"bd76ee9a-5792-4ff5-9847-093ed4c9570d","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"address is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetCustomer
+      option:
+        description: "Retrieve Customer by id, that is linked to the Client id"
+        summary: "Get Customer"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": *get_customer_response
+          "400":
+            examples:
+              "application/json": '{"code":400, "message":"unable to get customer, reason ***", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetCustomerByExternalRef
+      option:
+        description: "Retrieve a Customer details using External reference id"
+        summary: "Get Customer By Ref"
+        tags:
+          - Customers Management
+        responses:
+          "200":
+            examples:
+              "application/json": *get_customer_response
+          "400":
+            examples:
+              "application/json": '{"code":400, "message":"cant get customer by external reference, reason ***", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateCustomerWallet
+      option:
+        description: "Create new customer wallet"
+        summary: "Create Customer Wallet"
+        tags:
+          - Customer Wallets
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_customer","active":true,"customer_id":"08b4a717-1c9f-4482-9f57-2fa0996c8efa","group":"fiat"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetCustomerWallet
+      option:
+        description: "Returns customer wallet information"
+        summary: "Get Customer Wallet"
+        tags:
+          - Customer Wallets
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_customer","active":true,"customer_id":"08b4a717-1c9f-4482-9f57-2fa0996c8efa","group":"fiat"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListCustomerWallets
+      option:
+        description: "Allows to find wallets. The API provides the opportunity to supply a a Limit, Sort, Offset keys to control pagination"
+        summary: "List Customer Wallets"
+        tags:
+          - Customer Wallets
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallets":[{"wallet_id":"9c703b60-838b-453d-93c1-082a353f0635","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"TestWallet","active":true,"customer_id":"08b4a717-1c9f-4482-9f57-2fa0996c8efa","group":"fiat"},{"wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"test_customer","active":true,"customer_id":"08b4a717-1c9f-4482-9f57-2fa0996c8efa","group":"fiat"}],"pagination":{"totalCount":"2","page":"1"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateCustomerWallet
+      option:
+        description: "Allows to update customer wallet. The API provides the opportunity to update customer wallet active status and change the name of the wallet"
+        summary: "Update Customer Wallet"
+        tags:
+          - Customer Wallets
+        responses:
+          "200":
+            examples:
+              "application/json": '{"wallet":{"wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","wallet_product_id":"bed2596b-d0e0-4175-8b83-653224c2e200","name":"new_wallet_name","active":false,"customer_id":"08b4a717-1c9f-4482-9f57-2fa0996c8efa","group":"fiat"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateCustomerAccount
+      option:
+        description: "Allows to create account for a wallet"
+        summary: "Create Customer Account"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"f7858aa6-7fbf-4761-8fde-17fbb3acb89e","wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","name":"test_customer_account","active":true,"number":"","symbol":"826","available_balance":"0","ledger_balance":"0","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListCustomerAccounts
+      option:
+        description: "Allows to list customer accounts. The API provides the opportunity to supply a a Limit, Sort, Offset keys to control pagination"
+        summary: "List Customer Accounts"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"accounts":[{"account_id":"f7858aa6-7fbf-4761-8fde-17fbb3acb89e","wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","name":"test_customer_account","active":true,"number":"","symbol":"826","available_balance":"0","ledger_balance":"0","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}}],"pagination":{"totalCount":"1","page":"1"},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+    - method: externalclient.ClientExternalService.GetCustomerAccount
+      option:
+        description: "Retrieves account belonging to the wallet"
+        summary: "Get Customer Account"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"f7858aa6-7fbf-4761-8fde-17fbb3acb89e","wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","name":"test_customer_account","active":true,"number":"","symbol":"826","available_balance":"0","ledger_balance":"0","exponent":"2","default":true,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}}},"trace_id":"3158da4a-1dec-4980-a8fd-6c7dd7d98062"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+    - method: externalclient.ClientExternalService.FindCustomerAccountHistory
+      option:
+        description: "List account history. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination"
+        summary: "Find Customer Account History"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":[{"current_balance":"0","change_amount":"2000","balance_after_change":"2000","status":"approved","created_at":"2022-06-30T12:30:50.999714Z"}],"pagination":{"total_count":"1","page":"1"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+    - method: externalclient.ClientExternalService.LoadCustomerAccountBalance
+      option:
+        description: "Allows load funds to an account"
+        summary: "Load Customer Account Balance"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"0","change_amount":"2000","balance_after_change":"2000","status":"approved","created_at":"2022-06-30T12:30:50Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.SpendFromCustomerAccount
+      option:
+        description: "Allows spend funds from account"
+        summary: "Spend From Customer Account"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"2000","change_amount":"150","balance_after_change":"1850","status":"approved","created_at":"2022-06-30T12:32:39.915806Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateCustomerAccountBalance
+      option:
+        description: "Allows set the balance on account"
+        summary: "Update Customer Account Balance"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"1850","change_amount":"4000","balance_after_change":"4000","status":"approved","created_at":"2022-06-30T12:34:08.808564Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateCustomerAccount
+      option:
+        description: "Allows set the balance on account"
+        summary: "Update Customer Account"
+        tags:
+          - Customer Accounts
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account":{"account_id":"f7858aa6-7fbf-4761-8fde-17fbb3acb89e","wallet_id":"97088829-f769-4a49-889b-2ec8eef8d2d2","name":"test_customer_account","active":false,"number":"","symbol":"826","available_balance":"31022","ledger_balance":"0","exponent":"2","default":false,"config_override":{"symbol_order":{"orders":["840","978"]},"spend_control":{"limit_day":"20000","limit_week":"40000","limit_month":"300000"}},"iso_code":"00"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.HealthCheck
+      option:
+        description: "Ping endpoint used to determine the status of the api"
+        summary: "HealthCheck"
+        tags:
+          - General
+        responses:
+          "200":
+            examples:
+              "application/json": '{"status": "ok"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.AuthenticateApi
+      option:
+        security: []
+        description: "Authenticate with Clowd9 API. This endpoints returns a JWT token. The token is a short lived 120 minute token. It can be refreshed using RefreshToken endpoint"
+        summary: "Authenticate Api"
+        tags:
+          - General
+        responses:
+          "200":
+            examples:
+              "application/json": '{"access_token": "eyJhbGciOiJIUzI1InR5cCI6IkpXVCJ9.e30.Et9HFtf9R3" , "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0N", "trace_id": "ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "500":
+            examples:
+              "application/json": '{"code":500, "message":"Invalid authentication details", "details":[]}'
+
+    - method: externalclient.ClientExternalService.RefreshToken
+      option:
+        description: "Refresh token by sending an empty post request. Returns new API token"
+        summary: "Refresh Api Token"
+        tags:
+          - General
+        responses:
+          "200":
+            examples:
+              "application/json": '{"access_token": "eyJhbGciOiJIUzI1InR5cCI6IkpXVCJ9.e30.Et9HFtf9R3", "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm", "trace_id": "ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "500":
+            examples:
+              "application/json": '{"code":500, "message":"Invalid authentication details", "details":[]}'
+
+    - method: externalclient.ClientExternalService.CreateCard
+      option:
+        description: "The Create Card API allows for the creation of a single physical or virtual card. When submitting a Create Card request, the identifier of an existing customer needs to be transmitted as part of the request. The request also gives a chance to provide 3DS related data. Its structure and content are subject to the product configuration parameters.\nIt returns card id, customer id and product id together with card data (encrypted or plain text) if client is PCI DSS compliant. "
+        summary: "Create Card"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","cardDetails":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","pin":"1234","pan":"5123450069656229","cvv":"400","expiry":"06/23","valid_from":"06/22"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","secure_id":"c4ed6c79-640e-42a6-b842-1caad2663677"}'
+
+    - method: externalclient.ClientExternalService.GetCard
+      option:
+        description: "The Get Card API allows for the retrieval of the details of a single card."
+        summary: "Get Card"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card":{"card_id":"94209819-4ab7-43b2-ba39-64a66434a0b4","format":"physical","thermal_line1":"line1","thermal_line2":"line2","emboss_name":"line3","emboss_line4":"line4","card_status":"active"},"program_id":"640a5568-4bf3-4c46-81e3-fbfce6f416c5","customer_id":"04c8050f-7f64-4a11-9bec-dcb12a395ff5","product_id":"b544eef4-2544-4c2a-94a2-ac1c497c376d","delivery":{"fulfil1":"ff1","fulfil2":"ff2","card_delivery_ref":"ref","envelope_ref":"ref","carrier_ref":"ref","carrier_language_ref":"ref","design_ref":"ref"},"trace_id":"1881365595931924644"}'
+          "400":
+            examples:
+              "application/json": '{"code":400, "message":"cant create card, reason ***", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListCardTransactions
+      option:
+        description: "Retrieves all filtered card transactions"
+        summary: "List Card Transactions"
+        tags:
+          - List
+        responses:
+          "200":
+            examples:
+              "application/json": '{"transactions":[{"id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","program_id":"13f9d102-fd0b-4cc1-a38b-5a190ad4171b","product_id":"de70338c-7c16-47d7-ad1f-f0fd246a1034","card_config_id":"df70338c-7c16-47d7-ad1f-f0fd246a1021","source_type":"visa-iso","type":"example_type","type_detail":"example_type_detail","spend_type":"example_spend_type","status":"example_status","reason_code":"example_reason_code","reason_description":"example_reason_description","source":"example_source","country":"US","local_date":"2022-07-05T12:32:39.915806Z","local_amount":100,"local_currency":"826","bill_amount":4713,"bill_currency":"978","settled_balance":0,"block_amt":0,"avl_balance":0,"stan":"1399","acquiring_id":"430001","forwarding_id":"","transmission_date_time":"0610160844"}],"pagination":{"total_count":"1","page":"1"}}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.SetCardStatus
+      option:
+        description: "The Set Card Status API will enable you to change the status of a specific card_id. \n\n**active** - Card is active and system allows the transaction to be processed. \n\n**destroyed** - Where your customer decides they no longer require the card or for other reasons the card is to be terminated. This status cannot be reversed. \n\n**freeze** - A temporary block at the customer’s request. The status can be reversed upon the customer’s request or changed to another status, for example, lost/stolen. \n\n**administrative**  – Where you require the card to be blocked pending further investigation.  This status allows your customer service team to differentiate between potential fraudulent use and the card being blocked by the customer’s request. \n\n**fraud** - Post investigations or following your customer identifying fraudulent use, this status can be used subject to network dispute rules as they may require the card to be in a stolen status first. \n\n**stolen** - Card has been marked as stolen. This status can’t be reverted but can be changed to fraud if required. \n\n**lost** - Card has been marked as lost. This status can’t be reverted but can be changed to fraud if required. \n\nStatus generated by CLOWD9:\n\n**risk** - When a fraud and risk rule has been triggered, CLOWD9 will automatically change the status preventing further authorizations. This status can be updated to the relevant status post your investigations. \n\n**inactive** - Assigned to newly created card_ids. This status is changed to ‘active’ upon card activation. \n\n**expired** – This status is only to be used by CLOWD9 when the expiry date has passed."
+        summary: "Set Card Status"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id": "64553ef1-5e91-4a68-b444-a69fb53de555", "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+
+    - method: externalclient.ClientExternalService.LinkCardToAccount
+      option:
+        description: "The Link Card to Account API request allows to link the card with the specified accountId"
+        summary: "Link Card To Account"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id": "424bc9ae-cb73-40e5-8e4c-415d468b102d", "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - method: externalclient.ClientExternalService.ReissueCard
+      option:
+        description: "Card re-issuance normally is as a result of a Physical or Virtual card either being lost, stolen or compromised and used fraudulently and a non reversible status is applied. The Reissue Card API allows you to create a new card_id with a new PAN, CVV2 and Expiry for your customer linking the previous usage and limit configuration together with linking the card to the existing account. For physical cards, a new PIN is also required either set by you randomly or specified by your customer."
+        summary: "Reissue Card"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"old_card_id":"975b47ef-196f-4791-a4d9-4439baff577a","new_card_id":"6e079dcb-fa3f-4769-b498-a86a3bc91407","pan":"5123450043156544","pin":"3232","expiry_time":"2023-06-10T23:59:00.178256Z","cvv":"544","card_status":"inactive","secure_id":"92f8eb65-544d-474f-8613-7a11a3315aef","expiry":"06/23","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+    - method: externalclient.ClientExternalService.GetSecureCardDetails
+      option:
+        description: "Returns the details of a secure card"
+        summary: "Get Secure Card Details"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"pin":"x5B054h8QH4W2Xfr3VRvcm313g=","pan":"xr4UUJ1GKzWsR6uJD2ay0nwAj4ux9mYesqnpT0/YANQ=","cvv":"b4B057h8QH4W0Xfr3VRvcmx13g==","trace_id":"4aa2cfeb-0d6d-421a-b333-bcdf4be6c0c5","expiry":"2301"}'
+          "400":
+            examples:
+              "application/json": '{"code":2, "message": "cant get card credentials", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetCardDetails
+      option:
+        description: "Get card secure details"
+        summary: "Get Card Details"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"pin":"1234","pan":"5123450100026127","cvv":"127","expiry":"10/23","trace_id":"1881365595931924644"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetTdsTransactions
+      option:
+        description: "Return a list of 3DS transactions for specific Card id"
+        summary: "Get 3DS Transactions"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"5f7831b8-95b1-4fbb-b3f8-4d39ee73e5d7","total_count":"1","transactions":{"netcetera":[{"card_id":"netceteraCard1","card_state":{"is_active":true,"is_enrolled":true,"is_deleted":false,"is_locked":false},"acs_trx_id":"20d5ccb4-2918-49cc-a458-507bd3c74e33","ds_trx_id":"20d5ccb4-2918-49cc-a458-507bd3c74e32","authentication_start_date":"2002-05-30T09:30:10Z","authentication_end_date":"2002-05-30T09:30:10Z","challenge_start_date":"2002-05-30T09:30:10Z","challenge_end_date":"2002-05-30T09:30:10Z","merchant_data":{"merchant_country_code":"826","acquirer_country_code":"","merchant_name":"amazon"},"purchase_data":{"purchase_amount":"200.00","purchase_exponent":"2","purchase_currency":"GBP","purchase_date":"2002-05-30T09:30:10Z"},"protocol_version":"v1","transaction_status":"Y","transaction_status_reason":"ok","risk_advice":"none","authentication_method":"otp_sq","challenge_method":"OTP_SQ","exemption_data":{"exemption_id":"1","exemption_parameters":[{"key":"exempt","value":"yes"}]},"challenge_actions":{"challenge_action":[{"challenge_action_id":"","timestamp":"2002-05-30T09:30:10Z","text_param":[{"key":"testkey","value":"testValue"}]}]}}]},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.GetTdsCardEnrolmentData
+      option:
+        description: "Returns 3DS Enrolment details for given card"
+        summary: "Get 3DS Card Enrolment Data"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"netcetera_card":{"card_number":"5123453224530859","language_code":"en_US","is_locked":false,"is_active":true,"card_id":"d017f9b0-0ca0-4a8c-891e-c8afa2ae590c","netcetera_card_id":"qsFBgu03SQC4DqcL7RsdSSXmJ6I=","issuer_config_param":[{"param_name":"primaryAuthenticationType","param_value":"SDF_OTP_SQ_EXT"}]},"trace_id":"d017f9b0-0ca0-4a8c-891e-c8afa2ae590c"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UnlockTdsCard
+      option:
+        description: "Unlocks card from temporary lock on 3DS provider"
+        summary: "Unlock 3DS Card"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"18ef9392-bd29-4f40-8b22-3f756977b887", "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.FindTdsLogs
+      option:
+        description: "Returns available logs for clients 3DS provider for given card. The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination"
+        summary: "Find 3DS Logs"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"netcetera":{"otp":[{"ncas_card_id":"qKzNkAEPR1GaDxZfQj_YmzBAaR4=","otp":"456432","issuer_short_name":"Issuer short name / id.","request_id":"A reference","timestamp":"2017-07-21T17:32:28Z","merchant_name":"ACME Corporation","amount":"10.95","currency":"EUR"}],"notification":[{"identifiers":{"protocol_version":"2","payment_scheme":"MC","v1_identifiers":{},"v2_identifiers":{"three_dsServerTransactionId":"8ef9c9fd-2f21-40c7-9b7c-3924d2f9eb68"},"acs_transaction_id":"15b7b0ef-8a46-42fa-8b2a-740aacd1d11b","card_primary_key":{"card_id":"qKzNkAEPR1GaDxZfQj_YmzBAaR4=","organization_id":"71"},"hash_pan":"vMhSEmmFJC1xafS9SE1KW5oQRC8="},"transaction_status":"Y","authentication_method":"STATIC_AUTHENTICATOR","last_interaction_status":"FINALIZED","last_interaction_timestamp":"2022-06-16T11:25:29.289549Z","challenge_method":"SDF_OTP_SQ_EXT","atn":"30099","merchant_data":{"merchantId":"id-for-merId2","merchant_country_code":"756","acquirer_country_code":"","merchant_name":"Netcetera MerchantID"},"purchase_data":{"purchase_amount":"1095","purchase_exponent":"2","purchase_currency":"978","purchase_date":"2022-06-16T11:25:06Z"},"exemption_data":{"exemption_parameters":[]},"risk_data":{}}]},"pagination":{"total_count":"2","page":"1"},"trace_id":"18ef9392-bd29-4f40-8b22-3f756977b887"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.EnrolTdsCard
+      option:
+        description: "Enrol a given card to 3DS"
+        summary: "Enrol Card in 3DS"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"94209819-4ab7-43b2-ba39-64a66434a0b4","enrolment_status":"enroled","trace_id":"1881365595931924644"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.SetPin
+      option:
+        description: "This endpoint allows you to set a new PIN value, either on behalf of your Customer or a value set by them at card_id level. If the PIN value is not provided, CLOWD9 will randomly generate the PIN and return in the response.
+Please note you will need to be PCI DSS Complaint to use this endpoint."
+        summary: "Set PIN"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"pin":"1234", "secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.SetSecurePin
+      option:
+        description: "This endpoint allows you to set a new PIN value, either on behalf of your Customer or a value set by them at card_id level. The new PIN value must be provided to CLOWD9 otherwise the request will be declined.
+  The secure_pin value has to be provided and it should be a PIN encrypted with a customer's public key. Use Get Customer Key endpoint in Customer Management Section to retrieve the key"
+        summary: "Set Secure PIN"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"pin":"-- encrypted value --", "secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+
+
+
+    - method: externalclient.ClientExternalService.UnblockPin
+      option:
+        description: "The Unlock PIN allows you to reset your Customers PIN at card_id level. Following a succesful response, CLOWD9 will reset the Online PIN Counters and transmit a PIN script during the next authorisation request.
+CLOWD9 recommends the first transaction following a PIN unblock is made via an ATM to ensure the PIN unblock process is seamless for the Customers. If using a merchant terminal, the first transaction may result in a decline as the Chip will require the script to be received which can only occur after the request."
+        summary: "Unblock PIN"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"94209819-4ab7-43b2-ba39-64a66434a0b4", "secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"card_id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.ListCardStatuses
+      option:
+        description: "Retrieves all available card statuses"
+        summary: "List Card Statuses"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_statuses":["active", "blocked", "created", "disabled", "lost", "stolen", "expired"], "trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+
+    - method:  externalclient.ClientExternalService.ListCurrencyCodes
+      option:
+        description: "Lists all the currencies in the numeric and alphabetic representation in ISO4217 Format"
+        summary: "List Currency Codes"
+        tags:
+          - List
+        responses:
+          "200":
+            examples:
+              "application/json": '{"currency_codes":{"AED":"784","AFN":"971","ALL":"008","AMD":"051","ANG":"532"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+
+    - method: externalclient.ClientExternalService.ListCountryCodes
+      option:
+        description: "Lists all the country codes in the numeric and alphabetic representation in ISO3166 Format"
+        summary: "List Country Codes"
+        tags:
+          - List
+        responses:
+          "200":
+            examples:
+              "application/json": '{"country_codes":{"ABW":"533","AFG":"004","AGO":"024","AIA":"660","ALA":"248"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+
+    - method: externalclient.ClientExternalService.FindAuditLogs
+      option:
+        description: "Allows to find Audit logs by actor ID and actor type - \n The API provides the opportunity to supply a Limit, Sort, Offset keys to control pagination and date from / to"
+        summary: "Find Audit Logs"
+        tags:
+          - Audit
+        responses:
+          "200":
+            examples:
+              "application/json": '{"audit_logs":[{"audit_log_id":"4f76a866-b709-431c-ac70-4822a08b4b71","actor_id":"693adc19-5f92-439d-962f-c64a9209451f","actor_type":"user","trace_id":"00000000-0000-0000-0000-000000000000","endpoint":"SystemExternalService.GetUser","request":"request data in json string format","timestamp":"2022-07-15T00:50:59.022118Z","authenticated":true,"authentication_id":"693adc19-5f92-439d-962f-c64a9209451f","authentication_level":"user","user_agents":["grpc-node/1.24.2 grpc-c/8.0.0 (osx; chttp2; ganges)"],"request_ip":"127.0.0.1:56251"}],"pagination":{"totalCount":"1","page":"1"}}'
+
+    - method: externalclient.ClientExternalService.GetAuditLog
+      option:
+        description: "Allows to get a single audit log for given actor_id, actor_type and trace_id"
+        summary: "Get Audit Log"
+        tags:
+          - Audit
+        responses:
+          "200":
+            examples:
+              "application/json": '{"audit_log":{"audit_log_id":"4f76a866-b709-431c-ac70-4822a08b4b71","actor_id":"693adc19-5f92-439d-962f-c64a9209451f","actor_type":"user","trace_id":"00000000-0000-0000-0000-000000000000","endpoint":"SystemExternalService.GetUser","request":"request data in json string format","timestamp":"2022-07-15T00:50:59.022118Z","authenticated":true,"authentication_id":"693adc19-5f92-439d-962f-c64a9209451f","authentication_level":"user","user_agents":["grpc-node/1.24.2 grpc-c/8.0.0 (osx; chttp2; ganges)"],"request_ip":"127.0.0.1:56251"}}'
+
+    - method: externalclient.ClientExternalService.CreateBulkAddress
+      option:
+        description: "Allows to create a bulk address for a schedule"
+        summary: "Create Bulk Address"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"bulk_address":{"bulk_address_id":"b97882a6-949b-49db-9549-9de9be2eca33","post_code":"test","city":"test_town","country":"test_country","address_line1":"test_ad1","address_line2":"test_ad2","address_line3":"test_ad3","title":"test_title","first_name":"test_first","middle_name":"test_mid","last_name":"test_last","phone_number":"test_phone","email":"test_email","bulk_ref":"test_ext_ref"},"trace_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+
+    - method: externalclient.ClientExternalService.UpdateBulkAddress
+      option:
+        description: "Allows to update bulk address for schedule"
+        summary: "Update Bulk Address"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"bulk_address":{"bulk_address_id":"b97882a6-949b-49db-9549-9de9be2eca33","post_code":"updated_postcode","city":"updated_town","country":"updated_country","address_line1":"updated_ad1","address_line2":"updated_ad2","address_line3":"updated_ad3","title":"updated_title","first_name":"updated_first","middle_name":"updated_middle","last_name":"updated_last","phone_number":"updated_phone","email":"updated_email","bulk_ref":"updated_ext"},"trace_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+
+    - method: externalclient.ClientExternalService.ListCardUsageSets
+      option:
+        description: "List all available card usage sets"
+        summary: "List Card Usage Sets"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": *list_card_usage_set_response
+
+    - method: externalclient.ClientExternalService.GetCardUsage
+      option:
+        description: "Get Card Usage for specified card"
+        summary: "Get Card Usage"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{}'
+
+    - method: externalclient.ClientExternalService.SetCardUsage
+      option:
+        description: "Set Card Usage for specified card"
+        summary: "Set Card Usage"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{}'
+
+    - method: externalclient.ClientExternalService.OnboardCard
+      option:
+        description: "The onboard Card API allows for the creation of a single physical or virtual card. When submitting a Create Card request, the details of a new customer needs to be transmitted as part of the request. The request also gives a chance to provide 3DS related data. Its structure and content are subject to the product configuration parameters.\nIt returns card id, customer id and product id together with card data (encrypted or plain text) if client is PCI DSS compliant. "
+        summary: "Onboard Card"
+        tags:
+          - "Card Management"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","cardDetails":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","pin":"1234","pan":"5123450069656229","cvv":"400","expiry":"06/23","valid_from":"06/22"},"trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","secure_id":"c4ed6c79-640e-42a6-b842-1caad2663677", "wallet_id": "f64d9c24-23a3-4e00-a065-69f118c1a46b"}'
+    - method: externalclient.ClientExternalService.LoadClientAccountBalance
+      option:
+        description: "Allows load funds to client account"
+        summary: "Load Client Account Balance"
+        tags:
+          - "Client Accounts"
+        responses:
+          "200":
+            examples:
+              "application/json": '{"account_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4171e","history":{"current_balance":"0","change_amount":"2000","balance_after_change":"2000","status":"approved","created_at":"2022-06-30T12:30:50Z"},"trace_id":"98f9d102-fd0b-4cc1-a38b-5a190ad4175e"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateTdsCard
+      option:
+        description: "Allows to update 3DS security details and language code"
+        summary: "Update 3DS Card"
+        tags:
+          - 3DS
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"9fc53743-247b-185f-8720-13be7ac028b6","three_ds":{"additional_data":{"securityQuestion":"3DSSecurityQuestion","securityAnswer":"3DSSecurityAnswer"},"language_code":"en-US"}}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpdateDelivery
+      option:
+        description: "The Update Delivery Address endpoint allows you to update the delivery address held for your customer. CLOWD9 will populate the delivery address  during physical card creation transmitted to your Card Manufacturer via the card file. Where CLOWD9 do not hold a delivery address, the cardholder address will be used instead. Please note, updating the delivery address via this end not update the Cardholder address (used for address verification). If the cardholder address is to be updated, please use the Update Customer endpoint."
+        summary: "Update Delivery"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_id":"9fc53743-247b-185f-8720-13be7ac028b6"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"card id is required", "details":[]}'
+
+    - method: externalclient.ClientExternalService.UpgradeCardVirtual
+      option:
+        description: "The Upgrade Card Virtual endpoint allows you to upgrade the virtual card to physical card."
+        summary: "Upgrade Card Virtual"
+        tags:
+          - Card Management
+        responses:
+          "200":
+            examples:
+              "application/json": '{"card_details":{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","pin":"1234","pan":"5123450069656229","cvv":"400","expiry_date":"06/23","valid_from_date":"06/22"},"program_id":"6c34b1d9-b4b3-4751-b89b-ef40c0d81b68","customer_id":"54bd586e-5fb8-4c2d-823c-ebcf68e92689","trace_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9"}'
+          "400":
+            examples:
+              "application/json": '{"code":3, "message":"card id is required", "details":[]}'
+
+#==================================================================================================================================================
+  field:
+
+    - field: externalclient.AuditLog.audit_log_id
+      option:
+        description: "The identifier of audit log"
+    - field: externalclient.AuditLog.actor_id
+      option:
+        description: "The identifier of the actor - ID of the user or client that is making a change"
+    - field: externalclient.AuditLog.actor_type
+      option:
+        description: "Actor type - user or api"
+        required:
+          - "actor_type"
+    - field: externalclient.AuditLog.trace_id
+      option: *trace_id_options
+    - field: externalclient.AuditLog.endpoint
+      option:
+        description: "Name of endpoint that was called on clowd9 system"
+    - field: externalclient.AuditLog.request
+      option:
+        description: "Request data that was sent to the endpoint"
+    - field: externalclient.AuditLog.timestamp
+      option:
+        description: "Timestamp when audit log was generated"
+    - field: externalclient.AuditLog.authenticated
+      option:
+        description: "If request was made followed by a successful authentication"
+    - field: externalclient.AuditLog.authentication_id
+      option:
+        description: "Identifier of authentication"
+    - field: externalclient.AuditLog.authentication_level
+      option:
+        description: "Authentication level that requester holds"
+    - field: externalclient.AuditLog.authentication_error
+      option:
+        description: "Optional - if error message has occurred during the request"
+    - field: externalclient.AuditLog.user_agents
+      option:
+        description: "User agents that were present during the request"
+    - field: externalclient.AuditLog.request_ip
+      option:
+        description: "Ip address that belongs to the requesting entity"
+
+#---------------------------------------------------------------------------------------
+
+    - field: externalclient.UpdateDeliveryRequest.delivery
+      option:
+        description: "Delivery object holds the card manufacturer delivery details for physical cards."
+    - field: externalclient.UpdateDeliveryRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+
+    - field: externalclient.UpdateDeliveryResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateDeliveryResponse.trace_id
+      option: *trace_id_options
+
+    - field: externalclient.FindAuditLogsRequest.actor_id
+      option:
+        description: "The identifier of the actor. Can be client_id / user_id"
+        pattern: *pattern_uuid
+        min_length: 36
+        required:
+          - "actor_id"
+    - field: externalclient.FindAuditLogsRequest.actor_type
+      option:
+        required:
+          - "actor_type"
+    - field: externalclient.FindAuditLogsRequest.date_from
+      option:
+        description: "Date from - when to fetch the logs based on log creation time."
+    - field: externalclient.FindAuditLogsRequest.date_to
+      option:
+        description: "Date to - based on log creation time"
+    - field: externalclient.FindAuditLogsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: desc
+    - field: externalclient.FindAuditLogsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.FindAuditLogsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.FindAuditLogsResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.GetAuditLogRequest.actor_id
+      option:
+        description: "The identifier of the actor. Can be client_id / user_id"
+        pattern: *pattern_uuid
+        min_length: 36
+        required:
+          - "actor_id"
+    - field: externalclient.GetAuditLogRequest.actor_type
+      option:
+        description: "Actor type - can be api / user."
+        required:
+          - "actor_type"
+    - field: externalclient.GetAuditLogRequest.trace_id
+      option: *trace_id_options
+    - field: externalclient.GetAuditLogResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.AuditLog.request_ip
+      option:
+        description: "Actor type - can be user and api."
+    - field: externalclient.HealthCheckResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.AuthenticateResponse.access_token
+    - field: externalclient.AuthenticateResponse.refresh_token
+    - field: externalclient.AuthenticateResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.AuthenticateResponse.api_id
+      option:
+        description: "The API Keys ID, which will allow to ask what roles has given api"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+# -------------------------------------- ListCardUsageSetsRequest
+    - field: externalclient.ListCardUsageSetsRequest.page
+      option:
+        description: "Page number when listing card usage sets"
+    - field: externalclient.ListCardUsageSetsRequest.limit
+      option:
+        description: "Page limit when listing card usage sets"
+
+    - field: externalclient.ListCardUsageSetsResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.ListCardUsageSetsResponse.total_size
+      option:
+        description: "Total number of available usage sets"
+
+# -------------------------------------- SetCardUsageRequest
+    - field: externalclient.SetCardUsageRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SetCardUsageRequest.card_usage_id
+      option:
+        description: "The identifier of the card usage set."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SetCardUsageRequest.decision
+      option:
+        description: "Set specified card usage set to enabled or disabled"
+
+    - field: externalclient.SetCardUsageResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SetCardUsageResponse.card_usage_id
+      option:
+        description: "The identifier of the card usage set."
+        pattern: *pattern_uuid
+        min_length: 36
+    - field: externalclient.SetCardUsageResponse.trace_id
+      option: *trace_id_options
+
+# -------------------------------------- GetCardUsageRequest
+    - field: externalclient.GetCardUsageRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.GetCardUsageResponse.card_usages
+
+
+# -----------------------------------------------------
+    - field: externalclient.CardUsageSet.card_usage_id
+      option:
+        description: "The identifier of the card usage set"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CardUsageSet.name
+      option:
+        description: "Name of the card usage set"
+    - field: externalclient.CardUsageSet.description
+      option:
+        description: "Description of the card usage set"
+    - field: externalclient.CardUsageSet.default_decision
+      option:
+        description: "Default decision for the card usage set - true | false"
+    - field: externalclient.CardUsageSet.customer_change
+      option:
+        description: "Defines whether the usage can be changed via client API"
+
+# --------------------------------------------------------------------
+    - field: externalclient.CardBasic.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CardBasic.format
+      option:
+        description: "Card format, physical or virtual."
+    - field: externalclient.CardBasic.card_status
+      option:
+        description: "The default card status at the time of card creation is:\nvirtual card = active,\nphysical card = inactive,\nThis can be overridden at card creation stage if needed."
+    - field: externalclient.CardBasic.production_status
+      option:
+        description: "Current card production status. Applicable to physical card only if provided by card manufacturer. Can hold the following values:\ncomplete,\nnew,\nsending,\nerror,\ninproduction,\nsenttocustomer"
+
+# ------------------------- DELIVERY -------------------------------------------
+    - field: externalclient.Delivery.thermal_line1
+      option:
+        description: "Allows for additional line of text on the card. The value needs to be agreed with the card manufacturer."
+    - field: externalclient.Delivery.thermal_line2
+      option:
+        description: "Allows for additional line of text on the card. The value needs to be agreed with the card manufacturer."
+    - field: externalclient.Delivery.emboss_name
+      option:
+        description: "Name displayed on the front of the card. This field is required for physical card \noptional for virtual card \nrequired for physical card"
+    - field: externalclient.Delivery.emboss_line4
+      option:
+        description: "Fourth line on the front of card – this could contain card id or currency of card for example. This is part of card design approved by the Network and the card manufacturer."
+    - field: externalclient.Delivery.bulk_address_id
+      option:
+        description: "bulk_address_id is generated by Clowd9 as part of product configuration. \nIf specified, all cards with the same bulk_address_id will be sent together to the bulk delivery address.\nClients must agree a bulk delivery reference with card manufacturer.\n"
+    - field: externalclient.Delivery.fulfil1
+      option:
+        description: "Additional fulfillment parameter. Possible value(s) to be agreed with the card manufacturer"
+    - field: externalclient.Delivery.fulfil2
+      option:
+        description: "Additional fulfillment parameter. Possible value(s) to be agreed with the card manufacturer"
+    - field: externalclient.Delivery.card_delivery_ref
+      option:
+        description: "Card delivery reference."
+    - field: externalclient.Delivery.envelope_ref
+      option:
+        description: "Reference of envelope to insert card in. Value is agreed with the card manufacturer."
+    - field: externalclient.Delivery.carrier_ref
+      option:
+        description: "This is the card carrier reference as used by the card manufacturer. It is pre agreed with the card manufacturer."
+    - field: externalclient.Delivery.carrier_lang_ref
+      option:
+        description: "Language for the card carrier content defined as per the ISO 639-1 standard."
+    - field: externalclient.Delivery.design_ref
+      option:
+        description: "Pre agreed value with card manufacturer . Identifies the card design to be applied in personalization."
+    - field: externalclient.Delivery.address
+      option:
+        description: "The Delivery Address endpoint allows you to add the delivery address held for your customer. CLOWD9 will populate the delivery address during physical card creation transmitted to your Card Manufacturer via the card file. Where CLOWD9 do not hold a delivery address, the cardholder address will be used instead."
+    - field: externalclient.Delivery.contact
+
+
+
+    - field: externalclient.ContactAddress.state_county_or_province
+      option:
+        description: "Delivery county or province"
+    - field: externalclient.ContactAddress.post_code
+      option:
+        description: "Delivery post_code"
+    - field: externalclient.ContactAddress.city
+      option:
+        description: "Delivery city"
+    - field: externalclient.ContactAddress.country_iso
+      option:
+        description: "Delivery country"
+    - field: externalclient.ContactAddress.address_line1
+      option:
+        description: "Delivery address line 1"
+    - field: externalclient.ContactAddress.address_line2
+      option:
+        description: "Delivery address line 2"
+    - field: externalclient.ContactAddress.address_line3
+      option:
+        description: "Delivery address line 3"
+
+
+    - field: externalclient.ContactDetails.title
+      option:
+        description: "Delivery contact title."
+    - field: externalclient.ContactDetails.first_name
+      option:
+        description: "Delivery contact first name."
+    - field: externalclient.ContactDetails.middle_name
+      option:
+        description: "Delivery contact middle name."
+    - field: externalclient.ContactDetails.last_name
+      option:
+        description: "Delivery contact last name."
+    - field: externalclient.ContactDetails.phone_number
+      option:
+        description: "Delivery contact phone number (person in charge of receiving the bulk cards)"
+    - field: externalclient.ContactDetails.email
+      option:
+        description: "Delivery contact email (person in charge of receiving the bulk cards)"
+# ------------------------- Bulk address  -------------------------------------------
+
+    - field: externalclient.BulkAddress.bulk_address_id
+      option:
+        description: "The identifier of the bulk address."
+    - field: externalclient.BulkAddress.post_code
+      option:
+        description: "Bulk delivery - post_code"
+    - field: externalclient.BulkAddress.city
+      option:
+        description: "Bulk delivery - city"
+    - field: externalclient.BulkAddress.country
+      option:
+        description: "Bulk delivery - country"
+    - field: externalclient.BulkAddress.address_line1
+      option:
+        description: "Bulk delivery address line 1"
+    - field: externalclient.BulkAddress.address_line2
+      option:
+        description: "Bulk delivery address line 2"
+    - field: externalclient.BulkAddress.address_line3
+      option:
+        description: "Bulk delivery address line 3"
+
+    - field: externalclient.BulkAddress.title
+      option:
+        description: "Title (person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.first_name
+      option:
+        description: "First name ( person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.middle_name
+      option:
+        description: "Middle name (person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.last_name
+      option:
+        description: "Last name (person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.phone_number
+      option:
+        description: "Phone number (person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.email
+      option:
+        description: "Email (person in charge of receiving the bulk cards)"
+    - field: externalclient.BulkAddress.bulk_ref
+      option:
+        description: "Clients must agree a bulk reference with card manufacturer. If specified, all cards with the same bulk_address_id will be sent together to the bulk reference."
+
+
+    # ---------------------------------------------CardBasic------------------------------------------
+    - field: externalclient.CardBasic.card_id
+      option:
+        description: "The idenfier of the card"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CardBasic.format
+      option:
+        description: "Card format, physical or virtual"
+    - field: externalclient.CardBasic.card_status
+      option:
+        description: "The default card status at the time of card creation is:\nvirtual card = active,\nphysical card = inactive,\nThis can be overridden at card creation stage if needed."
+    - field: externalclient.CardBasic.production_status
+      option:
+        description: "Current card production status. Applicable to physical card only if provided by card manufacturer. Can hold the following values: complete, new, sending, error, inproduction, senttocustomer."
+
+# ---------------------------------------- Card Result?
+
+    - field: externalclient.CardResult.card_id
+      option:
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CardResult.secure_id
+      option:
+        description: "Provided if physical card is created"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CardResult.card_status
+      option:
+        description: "The default card status at the time of card creation is:\nvirtual card = active\nphysical card = inactive\nThis can be overridden at card creation stage if needed."
+    - field: externalclient.CardResult.pin
+      option:
+        description: "Desired PIN for the card. Please note that weak PIN (all the same digits, sequential numbers) will result in declining the API call. If not provided, a random PIN will be generated."
+    - field: externalclient.CardResult.pan
+      option:
+        description: "Card PAN number. This field will only be shown to PCI DSS compliant clients."
+    - field: externalclient.CardResult.cvv
+      option:
+        description: "Three digit card CVV number. This field will only be shown to PCI DSS compliant clients."
+    - field: externalclient.CardResult.expiry_date
+      option:
+        description: "Expiry date of the card. If not provided, a date will be assigned as per product configuration. YY/MM format."
+    - field: externalclient.CardResult.valid_from_date
+      option:
+        description: "Date the card is valid from. If not provided, card will be valid from card generation date. YY/MM format."
+
+# --------------------------------------- Card object - used when creating card
+    - field: externalclient.Card.card_id
+      option:
+        description: "The idenfier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.Card.format
+      option:
+        description: "Card format, physical or virtual."
+    - field: externalclient.Card.card_status
+      option:
+        description: "The default card status at the time of card creation is:\nvirtual card = active\nphysical card = inactive\nThis can be overridden at card creation stage if needed."
+    - field: externalclient.Card.valid_from_date
+      option:
+        description: "ValidFrom field. If not provided current time will be used."
+    - field: externalclient.Card.expiry_date
+      option:
+        pattern: "^\\d{2}\\/[0][1-9]|[1][0-2]$"
+        description: "Expiry date of the card. If not provided, a date will be assigned as per product configuration. YY/MM format."
+    - field: externalclient.Card.valid_from_date
+      option:
+        pattern: "^\\d{2}\\/[0][1-9]|[1][0-2]$"
+        description: "Date the card is valid from. If not provided, card will be valid from card generation date. YY/MM format"
+    - field: externalclient.Card.pin
+      option:
+        description: "Desired PIN for the card. If not supplied, the system will generate a value."
+
+# ----------------------------------- Set Secure Pin
+    - field: externalclient.SetSecurePinRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.SetSecurePinRequest.secure_id
+      option:
+        description: "Secure ID. Required for unblocking the PIN"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "secure_id"
+    - field: externalclient.SetSecurePinRequest.secure_pin
+      option:
+        description: "Encrypted with customer's public key PIN value will. Required for Update PIN"
+        required:
+          - "secure_pin"
+    - field: externalclient.SetSecurePinResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+# -------------------- SetPin PIN
+    - field: externalclient.SetPinRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.SetPinRequest.secure_id
+      option:
+        description: "Secure ID. Required for unblocking the PIN"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "secure_id"
+    - field: externalclient.SetPinRequest.pin
+      option:
+        description: "If specified, the PIN value will be used otherwise will be randomly generated. Required for Update PIN"
+    - field: externalclient.SetPinResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SetPinResponse.pin
+      option:
+        description: "PIN number associated with the card."
+# -------------------- Unblock PIN
+    - field: externalclient.UnblockPinRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.UnblockPinRequest.secure_id
+      option:
+        description: "Secure ID. Required for unblocking the PIN"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "secure_id"
+    - field: externalclient.UnblockPinResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+# --------------- GET CARD
+    - field: externalclient.GetCardRequest.card_id
+      option:
+        description: "The ID of the card to be retrieved."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.GetCardResponse.card
+      option:
+        description: "Card object that holds the card details."
+    - field: externalclient.GetCardResponse.program_id
+      option:
+        description: "The identifier of program."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCardResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCardResponse.product_id
+      option:
+        description: "The identifier of the product."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCardResponse.trace_id
+      option: *trace_id_options
+
+# --------------------------- CREATE CARD
+
+    - field: externalclient.CreateCardRequest.delivery
+      option:
+        description: "Delivery object holds the card manufacturer delivery details for physical cards."
+    - field: externalclient.CreateCardRequest.customer_id
+      option:
+        description: "Existing customer ID to link to the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.CreateCardRequest.product_id
+      option:
+        description: "Identifier of card product. The id is generated by CLOWD9."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "product_id"
+
+    - field: externalclient.CreateCardRequest.card_manufacturer_id
+      option:
+        description: "Card manufacturer id. Generated by Clowd9 and associated to product id."
+    - field: externalclient.CreateCardRequest.card
+      option:
+        description: "Card object that holds the card details."
+    - field: externalclient.CreateCardRequest.three_ds
+      option:
+        description: "3DS configuration details to be assigned to the card."
+    - field: externalclient.CreateCardRequest.account_ids
+      option:
+        description: "List of account IDs to link to the card."
+    - field: externalclient.CreateCardResponse.card_details
+      option:
+        description: "Card object that holds the card details."
+    - field: externalclient.CreateCardResponse.program_id
+      option:
+        description: "The identifier of the card program."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateCardResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateCardResponse.trace_id
+      option: *trace_id_options
+
+# ---------------------- SET CARD STATUS
+    - field: externalclient.SetCardStatusRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.SetCardStatusRequest.status
+      option:
+        description: "The desired new status for the card. Use ListCardStatus."
+        required:
+          - "status"
+    - field: externalclient.SetCardStatusResponse.card_id
+      option:
+        description: "The ID of the card that was updated."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SetCardStatusResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.SetCardStatusResponse.old_card_status
+      option:
+        description: "Card status that was previously set"
+    - field: externalclient.SetCardStatusResponse.new_card_status
+      option:
+        description: "Card status that is currently set"
+    - field: externalclient.FindCardsByCustomerIdRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+
+# ---------------------------------------FindCardsByCustomerIdResponse
+    - field: externalclient.FindCardsByCustomerIdResponse.trace_id
+      option: *trace_id_options
+
+# ----------------------------  GetSecureCardDetailsRequest
+    - field: externalclient.GetSecureCardDetailsRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.GetSecureCardDetailsRequest.secure_id
+      option:
+        description: "Secure ID. Required when retrieving card PIN information"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetSecureCardDetailsRequest.card_id
+      option:
+        description: "The ID of the card that was updated."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.GetSecureCardDetailsRequest.encrypted_cipher
+      option:
+        description: "Encrypted Cipher"
+        required:
+          - "encrypted_cipher"
+    - field: externalclient.GetSecureCardDetailsResponse.pin
+      option:
+        description: "PIN number associated with the card. This field will only be shown to PCI DSS compliant clients"
+    - field: externalclient.GetSecureCardDetailsResponse.pan
+      option:
+        description: "Card PAN number. This field will only be shown to PCI DSS compliant clients."
+    - field: externalclient.GetSecureCardDetailsResponse.cvv
+      option:
+        description: "Three digit card CVV number. This field will only be shown to PCI DSS compliant clients."
+    - field: externalclient.GetSecureCardDetailsResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.GetSecureCardDetailsResponse.expiry
+      option:
+        description: "Expiry date of the card. If not provided, a date will be assigned as per product configuration. YY/MM format."
+
+# ---------------------------------------------------------------ReissueCardRequest
+
+    - field: externalclient.ReissueCardRequest.card_id
+      option:
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.ReissueCardRequest.card
+      option:
+        min_length: 36
+        example: *example_card
+        required:
+          - "card"
+    - field: externalclient.ReissueCardRequest.three_ds
+      option:
+        description: "3DS configuration details to be assigned to the card."
+    - field: externalclient.ReissueCardRequest.delivery
+      option:
+        description: "Delivery object holds the card manufacturer delivery details for physical cards."
+    - field: externalclient.ReissueCardRequest.secure_id
+      option:
+        description: "Secure ID"
+    - field: externalclient.ReissueCardResponse.card_id
+      option:
+        description: "Reissued card Id."
+    - field: externalclient.ReissueCardResponse.secure_id
+      option:
+        description: "Secure ID. Required when retrieving card Pin"
+
+
+    - field: externalclient.ListCardTransactionsRequest.date_from
+      option:
+        description: "Card date from. Use to determine from which date transactions should be listed."
+        required:
+          - "date_from"
+    - field: externalclient.ListCardTransactionsRequest.date_to
+      option:
+        description: "Card date to. Use to determine to which date transactions should be listed."
+        required:
+          - "date_to"
+    - field: externalclient.ListCardTransactionsRequest.transaction_types
+      option:
+        description: "Card transaction type. Use to filter transactions with exact transaction types."
+    - field: externalclient.ListCardTransactionsRequest.spend_type
+      option:
+        description: "Card spend type. Use to filter transactions with exact spend types."
+    - field: externalclient.ListCardTransactionsRequest.card_id
+      option:
+        description: "Card id. Use to filter transactions with card id."
+        required:
+          - "card_id"
+    - field: externalclient.ListCardTransactionsRequest.limit
+      option:
+        description: "Limit. Use to limit amount of card transactions."
+        required:
+          - "limit"
+    - field: externalclient.ListCardTransactionsRequest.offset
+      option:
+        description: "Offset. Use to offset card transactions."
+        required:
+          - "offset"
+    - field: externalclient.ListCardTransactionsResponse.Transaction.transaction_id
+      option:
+        description: "Transaction Id."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.source_type
+      option:
+        description: "Source type. Describes source type of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.program_id
+      option:
+        description: "Program id. Describes program id of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.product_id
+      option:
+        description: "Product id. Describes product id of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.card_config_id
+      option:
+        description: "Card config id. Describes card config id of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.source_transaction_id
+      option:
+        description: "Source transaction id. Identifies the type of transaction, e.g. Authorisation, Reversal, etc."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.type
+      option:
+        description: "Type. Describes the type of transaction. E.g. ATM withdrawal, goods and services bought, etc."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.type_detail
+      option:
+        description: "Detail type. Describes details of transaction types."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.spend_type
+      option:
+        description: "Spend type. Describes spend type of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.status
+      option:
+        description: "Status. Describes status of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.reason_code
+      option:
+        description: "Reason code. Describes reason code of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.reason_description
+      option:
+        description: "Reason description. Shows description of transaction reason."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.source
+      option:
+        description: "Source. Describes source of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.country
+      option:
+        description: "Country. Describes country of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.local_date
+      option:
+        description: "Local date. Describes local date of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.local_amount
+      option:
+        description: "Local amount. Describes local amount of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.local_currency
+      option:
+        description: "Local currency. Describes local currency of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.bill_amount
+      option:
+        description: "Bill amount. Shows bill amount of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.bill_currency
+      option:
+        description: "Bill currency. Describes bill currency of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.settled_balance
+      option:
+        description: "Settled balance. Describes settled balance of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.block_amt
+      option:
+        description: "Local amount. Describes local amount of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.avl_balance
+      option:
+        description: "Available amount. Shows Available amount of transaction."
+    - field: externalclient.ListCardTransactionsResponse.Transaction.stan
+      option:
+        description: "Systems Trace Audit Number(STAN), DE11. Describes STAN of transaction"
+    - field: externalclient.ListCardTransactionsResponse.Transaction.acquiring_id
+      option:
+        description: "Acquiring Institution ID Code, DE32. Describes acquiring id of transaction"
+    - field: externalclient.ListCardTransactionsResponse.Transaction.forwarding_id
+      option:
+        description: "Forwarding Institution ID Code, DE33. Describes forwarding id of transaction"
+    - field: externalclient.ListCardTransactionsResponse.Transaction.transmission_date_time
+      option:
+        description: "Transmission date time. Describes transmission date time of transaction"
+    - field: externalclient.ListCardTransactionsResponse.transactions
+      option:
+        description: "Shows found transactions."
+    - field: externalclient.ListCardTransactionsResponse.pagination
+      option:
+        description: "Shows pagination."
+    - field: externalclient.ListCardTransactionsResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.LinkCardToAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.LinkCardToAccountRequest.card_id
+      option:
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.LinkCardToAccountResponse.card_id
+      option:
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.LinkCardToAccountResponse.trace_id
+      option: *trace_id_options
+
+# ------------------------------------------------- OnboardCard
+
+    - field: externalclient.OnboardCardRequest.card_manufacturer_id
+      option:
+        description: "Card manufacturing configuration ID assigned to the product_id."
+    - field: externalclient.OnboardCardRequest.delivery
+      option:
+        description: "Delivery object holds the card manufacturer delivery details for physical cards."
+    - field: externalclient.OnboardCardRequest.customer
+      option:
+        description: "Customer object with customer details."
+        required:
+          - "customer"
+    - field: externalclient.OnboardCardRequest.product_id
+      option:
+        description: "Identifier of the product "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "product_id"
+    - field: externalclient.OnboardCardRequest.card
+      option:
+        description: "Card object that holds the card details."
+    - field: externalclient.OnboardCardRequest.three_ds
+      option:
+        description: "3DS configuration details to be assigned to the card."
+    - field: externalclient.OnboardCardRequest.wallet_product_id
+      option:
+        description: "Wallet product Id."
+    - field: externalclient.OnboardCardRequest.wallet_name
+      option:
+        description: "Wallet name."
+
+    - field: externalclient.OnboardCardResponse.card_details
+      option:
+        description: "Card object that holds the card details."
+    - field: externalclient.OnboardCardResponse.program_id
+      option:
+        description: "The identifier of the card program."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.OnboardCardResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.OnboardCardResponse.trace_id
+      option: *trace_id_options
+    - field: externalclient.OnboardCardResponse.wallet_id
+      option:
+        description: "Wallet ID Required when retrieving wallet accounts"
+
+
+# -------------------------------------------------------------------------------------------------------
+    - field: externalclient.GetCardDetailsRequest.card_id
+      option:
+        description: "The ID of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.GetCardDetailsRequest.secure_id
+      option:
+        description: "Secure ID."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCardDetailsResponse.pin
+      option:
+        description: "Desired PIN for the card. Please note that weak PIN (all the same digits, sequential numbers) will result in declining the API call. If not provided, a random PIN will be generated."
+    - field: externalclient.GetCardDetailsResponse.pan
+      option:
+        description: "Card PAN number."
+    - field: externalclient.GetCardDetailsResponse.cvv
+      option:
+        description: "Card CVV number."
+    - field: externalclient.GetCardDetailsResponse.expiry_date
+      option:
+        description: "Expiry date of the card. If not provided, a date will be assigned as per product configuration. YY/MM format."
+    - field: externalclient.GetCardDetailsResponse.trace_id
+      option:
+        description: "Trace ID. Describes trace id."
+
+# --------------------------------------------------------------------
+
+    - field: externalclient.GetClientRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListClientsRequest.client_id
+      option:
+        description: "Optional identifier of the client."
+        example: *example_uuid
+
+# ------------------ CREATE CUATOMER
+    - field: externalclient.CreateCustomerRequest.client_id
+      option:
+        description: "Optional Client ID that owns the Program. This field is available only for the issuers"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.CreateCustomerResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    # Create Customer
+    - field: externalclient.CreateCustomer.date_of_birth
+      option:
+        description: "Customer date of birth"
+    - field: externalclient.CreateCustomer.customer_id
+      option:
+        description: "Mandatory customer ID in UUID format"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.CreateCustomer.title
+      option:
+        description: "Customer title."
+    - field: externalclient.CreateCustomer.first_name
+      option:
+        description: "Customer first name."
+        required:
+          - "first_name"
+    - field: externalclient.CreateCustomer.middle_name
+      option:
+        description: "Customer middle name."
+    - field: externalclient.CreateCustomer.last_name
+      option:
+        description: "Customer last name."
+        required:
+          - "last_name"
+    - field: externalclient.CreateCustomer.date_of_birth
+      option:
+        description: "Customer date of birth"
+    - field: externalclient.CreateCustomer.phone_number
+      option:
+        description: "Customer phone number, international format +(country code) mobile number"
+        required:
+          - "phone_number"
+    - field: externalclient.CreateCustomer.email
+      option:
+        description: "Customer email address."
+    - field: externalclient.CreateCustomer.external_ref
+      option:
+        description: "This is a customer reference held in the client’s system"
+    - field: externalclient.CreateCustomer.language_code
+      option:
+        description: "The BCP-47 identification code of the language the customer prefers in SMS and email communications for 3DS OTP delivery"
+    - field: externalclient.CreateCustomer.address
+      option:
+        required:
+          - "address"
+    - field: externalclient.CreateCustomer.identification
+      option:
+        description: "This is a customer additional identification information"
+
+
+    - field: externalclient.GetSecureFrameKeyRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    # - field: externalclient.GetSecureFrameKeyRequest.client_id
+    #   option:
+    #     description: "The identifier of the client."
+    #     pattern: *pattern_uuid
+    #     min_length: 36
+    #     example: *example_uuid
+    #     required:
+    #       - "client_id"
+    - field: externalclient.GetSecureFrameKeyResponse.key
+      option:
+        description: "The identifier of the key."
+        pattern: "[a-zA-Z0-9+/=]"
+        min_length: 218
+    - field: externalclient.GetSecureFrameKeyResponse.trace_id
+      option:
+        description: "The identifier of the trace."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    # - field: externalclient.UpdateCustomerRequest.client_id
+    #   option:
+    #     description: "Optional client identifier"
+    #     pattern: *pattern_uuid
+    #     min_length: 36
+    #     example: *example_uuid
+    - field: externalclient.UpdateCustomerRequest.customer_id
+      option:
+        description: "The identifier of the customer"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.UpdateCustomerResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCustomerRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.GetCustomerRequest.client_id
+      option:
+        description: "Optional client identifier"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCustomerByExternalRefRequest.external_ref
+      option:
+        description: "External reference identifier"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "external_ref"
+    - field: externalclient.GetCustomerByExternalRefRequest.client_id
+      option:
+        description: "Optional client identifier"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListCustomersRequest.client_id
+      option:
+        description: "Optional client identifier"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListCustomersRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListCustomersRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListCustomersRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListCustomersRequest.token
+      option:
+        description: "Token - required for next page listing"
+        example: 'aWQrdGltZQo='
+    - field: externalclient.ListCustomersResponse.count
+      option:
+        description: "Count - Total number of results"
+        example: '232'
+    - field: externalclient.ListCustomersResponse.next_page_token
+      option:
+        description: "Token - required for next page listing"
+        example: '"aWQrdGltZQo="'
+    - field: externalclient.ListCustomersResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+# Address
+    - field: externalclient.Address.address_line1
+      option:
+        description: "Customer address line 1"
+        required:
+          - "address_line1"
+    - field: externalclient.Address.address_line2
+      option:
+        description: "Customer address line 2"
+    - field: externalclient.Address.address_line3
+      option:
+        description: "Customer address line 3"
+    - field: externalclient.Address.city
+      option:
+        description: "Customer city."
+        required:
+          - "city"
+    - field: externalclient.Address.state_county_or_province
+      option:
+        description: "Customer state, county or province"
+    - field: externalclient.Address.post_code
+      option:
+        description: "Customer postal code."
+        required:
+          - "post_code"
+    - field: externalclient.Address.country_iso
+      option:
+        description: "Customer country code in ISO 3166-3 alpha-3 representation, for example GBR (Great Britain)."
+        required:
+          - "country_iso"
+
+
+# Identification
+    - field: externalclient.Identification.identification_1_type
+      option:
+        description: "Customer identification type 1 i.e Social Security Number, Individual Taxpayer Identification Number, Passport, Driver’s License."
+    - field: externalclient.Identification.identification_1_id
+      option:
+        description: "Alpha numeric value associated with the ID type."
+    - field: externalclient.Identification.identification_1_country
+      option:
+        description: "Identifier 1 issuing country (mandatory field if identification  type 1 is populated )"
+    - field: externalclient.Identification.identification_1_state
+      option:
+        description: "Identifier 1 issuing state (mandatory if identification 1 country is USA)"
+    - field: externalclient.Identification.identification_2_type
+      option:
+        description: "customer identifier type 2 i.e Social Security Number, Individual Taxpayer Identification Number, Passport, Driver’s License."
+    - field: externalclient.Identification.identification_2_id
+      option:
+        description: "Alpha numeric value associated with the ID type."
+    - field: externalclient.Identification.identification_2_country
+      option:
+        description: "Identifier 2 issuing country (mandatory if identification type 2 is populated)"
+    - field: externalclient.Identification.identification_2_state
+      option:
+        description: "Identifier 2 issuing state (mandatory if identification 2 country is USA)"
+
+# Customer
+    - field: externalclient.Customer.customer_id
+      option:
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.Customer.title
+      option:
+        description: "Customer title."
+    - field: externalclient.Customer.first_name
+      option:
+        description: "Customer first name."
+        required:
+          - "first_name"
+    - field: externalclient.Customer.middle_name
+      option:
+        description: "Customer middle name."
+    - field: externalclient.Customer.last_name
+      option:
+        description: "Customer last name."
+        required:
+          - "last_name"
+
+    - field: externalclient.Customer.phone_number
+      option:
+        description: "Customer phone number, international format +(country code) mobile number"
+    - field: externalclient.Customer.email
+      option:
+        description: "Customer email address."
+    - field: externalclient.Customer.external_ref
+      option:
+        description: "This is a customer reference held in the client’s system"
+    - field: externalclient.Customer.language_code
+      option:
+        description: "The BCP-47 identification code of the language the customer prefers in SMS and email communications for 3DS OTP delivery"
+    - field: externalclient.Customer.address
+      option:
+        required:
+          - "address"
+    - field: externalclient.Customer.identification
+      option:
+        description: "This is a customer additional identification information"
+
+# ------------------------ Update Customer
+    - field: externalclient.UpdateCustomer.title
+      option:
+        description: "Customer title."
+    - field: externalclient.UpdateCustomer.first_name
+      option:
+        description: "Customer first name."
+        required:
+          - "first_name"
+    - field: externalclient.UpdateCustomer.middle_name
+      option:
+        description: "Customer middle name."
+    - field: externalclient.UpdateCustomer.last_name
+      option:
+        description: "Customer last name."
+        required:
+          - "last_name"
+    - field: externalclient.UpdateCustomer.date_of_birth
+      option:
+        description: "Customer date of birth"
+    - field: externalclient.UpdateCustomer.phone_number
+      option:
+        description: "Customer phone number, international format +(country code) mobile number"
+        required:
+          - "phone_number"
+    - field: externalclient.UpdateCustomer.email
+      option:
+        description: "Customer email address."
+    - field: externalclient.UpdateCustomer.external_ref
+      option:
+        description: "This is a customer reference held in the client’s system"
+    - field: externalclient.UpdateCustomer.language_code
+      option:
+        description: "The BCP-47 identification code of the language the customer prefers in SMS and email communications for 3DS OTP delivery"
+    - field: externalclient.UpdateCustomer.address
+      option:
+        required:
+          - "address"
+    - field: externalclient.UpdateCustomer.identification
+      option:
+        description: "This is a customer additional identification information"
+
+# ListCardStatusesResponse
+
+    - field: externalclient.ListCardStatusesResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListCurrencyCodesResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.CreateBulkAddressRequest.card_manufacturer_id
+      option:
+        description: "Card Manufacturer configuration Id generated by CLOWD9 and associated to Product Id."
+        required:
+          - "card_manufacturer_id"
+    - field: externalclient.CreateBulkAddressRequest.bulk_address
+      option:
+        description: "Bulk delivery details."
+        required:
+          - "bulk_address"
+
+    - field: externalclient.CreateBulkAddressResponse.bulk_address_id
+      option:
+        description: "The identifier of the bulk address."
+    - field: externalclient.CreateBulkAddressResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.UpdateBulkAddressRequest.card_manufacturer_id
+      option:
+        description: "Card Manufacturer configuration Id generated by CLOWD9 and associated to Product Id."
+        required:
+          - "card_manufacturer_id"
+    - field: externalclient.UpdateBulkAddressRequest.bulk_address_id
+      option:
+        description: "The identifier of the bulk address."
+        required:
+          - "bulk_address_id"
+    - field: externalclient.UpdateBulkAddressRequest.bulk_address
+      option:
+        description: "Bulk delivery details."
+        required:
+          - "bulk_address"
+    - field: externalclient.UpdateBulkAddressResponse.bulk_address_id
+      option:
+        description: "The identifier of the bulk address."
+    - field: externalclient.UpdateBulkAddressResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+# -------------------------------------------------- GetTdsTransactionsRequest
+    - field: externalclient.GetTdsTransactionsRequest.card_id
+      option:
+        description: "The idenfier of the card"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.GetTdsTransactionsRequest.start_date
+      option:
+        description: "Defines the point in time from when we want to fetch transactions"
+        required:
+          - "start_date"
+    - field: externalclient.GetTdsTransactionsRequest.end_date
+      option:
+        description: "Defines the point in time to when we want to fetch transactions"
+        required:
+          - "end_date"
+    - field: externalclient.GetTdsTransactionsRequest.limit
+      option:
+        description: "Defines the amount of transactions we want to fetch"
+        required:
+          - "limit"
+    - field: externalclient.GetTdsCardEnrolmentDataRequest.card_id
+      option:
+        description: "The identifier of the card."
+        required:
+          - "card_id"
+    - field: externalclient.GetTdsCardEnrolmentDataResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.NetceteraCardEnrolment.is_active
+      option:
+        required:
+          - "is_active"
+    - field: externalclient.NetceteraCardEnrolment.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UnlockTdsCardRequest.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.UnlockTdsCardResponse.card_id
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UnlockTdsCardResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.NetceteraOtpLog.netcetera_card_id
+      option:
+        description: "Netcetera Card Id"
+    - field: externalclient.NetceteraOtpLog.otp
+      option:
+        description: "One time passcode send to customer"
+    - field: externalclient.NetceteraOtpLog.issuer_short_name
+      option:
+        description: "Issuer short name"
+    - field: externalclient.NetceteraOtpLog.request_id
+      option:
+        description: "Request ID on Netcetera network"
+    - field: externalclient.NetceteraOtpLog.timestamp
+      option:
+        description: "Timestamp"
+    - field: externalclient.NetceteraOtpLog.merchant_name
+      option:
+        description: "Merchant name"
+    - field: externalclient.NetceteraOtpLog.amount
+      option:
+        description: "Transaction amount"
+    - field: externalclient.NetceteraOtpLog.currency
+      option:
+        description: "Transaction currency"
+    - field: externalclient.NetceteraNotificationLog.Cardprimarykey.card_id
+      option:
+        description: "Netcetera card Id"
+    - field: externalclient.NetceteraNotificationLog.Cardprimarykey.organization_id
+      option:
+        description: "Organization Id"
+    - field: externalclient.NetceteraNotificationLog.Identifiers.payment_scheme
+      option:
+        description: "Payment sheme"
+    - field: externalclient.NetceteraNotificationLog.Merchantdata.merchant_id
+      option:
+        description: "Merchant Id"
+    - field: externalclient.NetceteraNotificationLog.Merchantdata.merchant_country_code
+      option:
+        description: "Merchant country code"
+    - field: externalclient.NetceteraNotificationLog.Merchantdata.acquirer_country_code
+      option:
+        description: "Acquirer country code"
+    - field: externalclient.NetceteraNotificationLog.Merchantdata.merchant_name
+      option:
+        description: "Merchant name"
+    - field: externalclient.NetceteraNotificationLog.Purchasedata.purchase_amount
+      option:
+        description: "Purchase Amount"
+    - field: externalclient.NetceteraNotificationLog.Purchasedata.purchase_exponent
+      option:
+        description: "Purchase exponent"
+    - field: externalclient.NetceteraNotificationLog.Purchasedata.purchase_currency
+      option:
+        description: "Purchase currency"
+    - field: externalclient.NetceteraNotificationLog.Purchasedata.purchase_date
+      option:
+        description: "Purchase date"
+    - field: externalclient.FindTdsLogsRequest.card_id
+      option:
+        description: "The card Id."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.FindTdsLogsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.FindTdsLogsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.FindTdsLogsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.FindTdsLogsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.EnrolTdsCardRequest.card_id
+      option:
+        description: "The card Id."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "card_id"
+    - field: externalclient.EnrolTdsCardRequest.three_ds
+      option:
+        description: "3DS configuration details to be assigned to the card."
+        required:
+          - "three_ds"
+    - field: externalclient.EnrolTdsCardResponse.card_id
+      option:
+        description: "Card Id"
+    - field: externalclient.EnrolTdsCardResponse.enrolment_status
+      option:
+        description: "3DS Enrolment status"
+    - field: externalclient.EnrolTdsCardResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+        pattern: *pattern_uuid
+        min_length: 36
+        example: '"1881365595931924644"'
+    - field: externalclient.WalletProduct.wallet_product_id
+      option:
+        description: "Identifier of wallet product. The id is generated by Clowd9."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.WalletProduct.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.WalletProduct.ref
+      option:
+        description: "Optional wallet product reference."
+    - field: externalclient.WalletProduct.name
+      option:
+        description: "A name assigned to a wallet."
+    - field: externalclient.WalletProduct.default
+      option:
+        description: "Wallet product default - defines if the wallet should be treated as default."
+    - field: externalclient.WalletProduct.config
+      option:
+        description: "Wallet product configuration - contains options for wallet account control."
+    - field: externalclient.Configuration.allowed_symbols
+      option:
+        description: "Indicates the currencies that are allowed for wallet product."
+        example: '["826", "978", "840"]'
+    - field: externalclient.Configuration.default_symbols
+      option:
+        description: "Indicates the currencies that will considered as defaults."
+        example: '["826", "978"]'
+    - field: externalclient.Configuration.default_account_symbol
+      option:
+        description: "Indicates the default account symbol."
+        example: '"826"'
+    - field: externalclient.Configuration.symbol_orders
+      option:
+        description: "Indicates the order of symbol accounts to take fund from in case the default account does not have enough funds."
+        example: '[{"symbol":"826", "order":["840", "978"]}, {"symbol":"840", "order":["826", "978"]}]'
+    - field: externalclient.Configuration.account_entity_types
+      option:
+        description: "Indicates what entity accounts should be allowed for creation."
+        example: '["card", "qrCode"]'
+    - field: externalclient.Configuration.spend_controls
+      option:
+        description: "Indicates what asset accounts should be allowed for creation."
+        example: '[{"symbol":"826","limit_day":150,"limit_week":500,"limit_month":0},{"currency":"840","limit_day":0,"limit_week":0,"limit_month":2000}]'
+    - field: externalclient.Configuration.wallet_to_wallet_transfer_allowed
+      option:
+        description: "Indicates if transfers of funds between different wallets should be allowed."
+        example: 'false'
+    - field: externalclient.SymbolOrder.symbol
+      option:
+        description: "Indicates account symbol, can represent currency in iso format, equity ticker, crypto."
+        example: '"826"'
+    - field: externalclient.SymbolOrder.orders
+      option:
+        description: "Indicates a currency selection order."
+        example: '["840", "978"]'
+    - field: externalclient.SpendControl.symbol
+      option:
+        description: "Indicates account symbol, can represent currency in iso format, equity ticker, crypto."
+        example: '"826"'
+    - field: externalclient.SpendControl.limit_day
+      option:
+        description: "Indicates the daily spend limit."
+        example: '150'
+    - field: externalclient.SpendControl.limit_week
+      option:
+        description: "Indicates the daily spend limit."
+        example: '700'
+    - field: externalclient.SpendControl.limit_month
+      option:
+        description: "Indicates the daily spend limit."
+        example: '2000'
+    - field: externalclient.AccountConfiguration.symbol_order
+      option:
+        description: "Indicates the order of symbol accounts to take fund from in case the default account does not have enough funds."
+        example: '{"order":["840", "978"]}'
+    - field: externalclient.AccountConfiguration.spend_control
+      option:
+        description: "Indicates what asset accounts should be allowed for creation."
+        example: '{"limit_day":150,"limit_week":500,"limit_month":0}'
+    - field: externalclient.AccountSymbolOrder.orders
+      option:
+        description: "Indicates a currency selection order."
+        example: '["840", "978"]'
+    - field: externalclient.AccountSpendControl.limit_day
+      option:
+        description: "Indicates the daily spend limit."
+        example: '150'
+    - field: externalclient.AccountSpendControl.limit_week
+      option:
+        description: "Indicates the daily spend limit."
+        example: '700'
+    - field: externalclient.AccountSpendControl.limit_month
+      option:
+        description: "Indicates the daily spend limit."
+        example: '2000'
+    - field: externalclient.Wallet.wallet_id
+      option:
+        description: "The identifier of the wallet."
+    - field: externalclient.Wallet.wallet_product_id
+      option:
+        description: "Identifier of wallet product. The id is generated by Clowd9."
+    - field: externalclient.Wallet.name
+      option:
+        description: "A name assigned to a wallet."
+    - field: externalclient.Wallet.active
+      option:
+        description: "Wallet active status."
+    - field: externalclient.Wallet.customer_id
+      option:
+        description: "The identifier of the wallet's owner."
+    - field: externalclient.Wallet.group
+      option:
+        description: "Wallet group."
+    - field: externalclient.Account.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.Account.wallet_id
+      option:
+        description: "The identifier of the wallet."
+    - field: externalclient.Account.name
+      option:
+        description: "Account name."
+    - field: externalclient.Account.active
+      option:
+        description: "Account active status."
+    - field: externalclient.Account.number
+      option:
+        description: "Account number. - can be left empty."
+    - field: externalclient.Account.symbol
+      option:
+        description: "Account symbol, can represent currency in iso format, equity ticker, crypto."
+    - field: externalclient.Account.available_balance
+      option:
+        description: "Account available balance."
+    - field: externalclient.Account.ledger_balance
+      option:
+        description: "Account ledger balance."
+    - field: externalclient.Account.exponent
+      option:
+        description: "Account exponent value - minor unit value."
+    - field: externalclient.Account.default
+      option:
+        description: "Account default status."
+    - field: externalclient.Account.parent_account_id
+      option:
+        description: "Optional parent account Id."
+    - field: externalclient.Account.config_override
+      option:
+        description: "Optional config override value - configuration overrides take priority over wallet configuration values."
+    - field: externalclient.Account.iso_code
+      option:
+        description: "Optional iso code for fiat accounts:\n00 - default,\n10 - savings account,\n20 - checking account,\n30 - credit card,\n40 - universal.\n"
+    - field: externalclient.GetWalletProductRequest.wallet_product_id
+      option:
+        description: "Identifier of wallet product. The id is generated by Clowd9."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_product_id"
+    - field: externalclient.GetWalletProductRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetWalletProductResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.ListWalletProductsRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListWalletProductsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListWalletProductsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListWalletProductsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListWalletProductsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.CreateCustomerWalletRequest.wallet_product_id
+      option:
+        description: "Identifier of wallet product. The id is generated by Clowd9."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_product_id"
+    - field: externalclient.CreateCustomerWalletRequest.client_id
+      option:
+        description: "Optional identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateCustomerWalletRequest.name
+      option:
+        description: "Wallet product name."
+        required:
+          - "name"
+    - field: externalclient.CreateCustomerWalletRequest.active
+      option:
+        description: "wallet active status - defines if wallet should be active upon creation."
+        required:
+          - "active"
+    - field: externalclient.CreateCustomerWalletRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.CreateCustomerWalletRequest.group
+      option:
+        description: "Wallet group - can be one of:\nfiat,\ncrypto,\nequity,\nloyalty.\n"
+        example: '"fiat"'
+        required:
+          - "group"
+    - field: externalclient.CreateCustomerWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.GetCustomerWalletRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.GetCustomerWalletRequest.client_id
+      option:
+        description: "The identifier of the owner."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCustomerWalletRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.GetCustomerWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.ListCustomerWalletsRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListCustomerWalletsRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.ListCustomerWalletsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListCustomerWalletsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListCustomerWalletsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListCustomerWalletsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.CreateCustomerAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateCustomerAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.CreateCustomerAccountRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.CreateCustomerAccountRequest.name
+      option:
+        description: "Account name."
+        required:
+          - "name"
+    - field: externalclient.CreateCustomerAccountRequest.active
+      option:
+        description: "Account active status - should account be active upon creation."
+        required:
+          - "active"
+    - field: externalclient.CreateCustomerAccountRequest.symbol
+      option:
+        description: "Account symbol, can represent currency in iso format, equity ticker, crypto."
+        required:
+          - "symbol"
+    - field: externalclient.CreateCustomerAccountRequest.default
+      option:
+        description: "Account default value - defines if account should be treated as default for the wallet."
+        required:
+          - "default"
+    - field: externalclient.CreateCustomerAccountRequest.parent_account_id
+      option:
+        description: "Optional parent account Id - if provided, account will be linked to a parent account."
+    - field: externalclient.CreateCustomerAccountRequest.config_override
+      option:
+        description: "Defines optional config values that will override the wallet product configuration and take priority."
+    - field: externalclient.CreateCustomerAccountRequest.iso_code
+      option:
+        description: "Optional iso code for fiat accounts:\n00 - default,\n10 - savings account,\n20 - checking account,\n30 - credit card,\n40 - universal"
+    - field: externalclient.CreateCustomerAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.GetCustomerAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.GetCustomerAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetCustomerAccountRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.GetCustomerAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.GetCustomerAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.ListCustomerAccountsRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.ListCustomerAccountsRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListCustomerAccountsRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.ListCustomerAccountsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListCustomerAccountsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListCustomerAccountsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListCustomerAccountsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.FindAccountHistoryRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.FindAccountHistoryRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.FindAccountHistoryRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.FindAccountHistoryRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.FindAccountHistoryRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.FindAccountHistoryRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.FindAccountHistoryRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.transaction_id
+      option:
+        description: "The identifier of the transaction."
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event."
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event."
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even."
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even."
+    - field: externalclient.FindAccountHistoryResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event."
+    - field: externalclient.FindAccountHistoryResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.FindAccountHistoryResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.LoadCustomerAccountBalanceRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.LoadCustomerAccountBalanceRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.LoadCustomerAccountBalanceRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.LoadCustomerAccountBalanceRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.LoadCustomerAccountBalanceRequest.amount
+      option:
+        description: "Amount."
+        required:
+          - "amount"
+    - field: externalclient.LoadCustomerAccountBalanceResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.LoadCustomerAccountBalanceResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.SpendFromCustomerAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.SpendFromCustomerAccountRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.SpendFromCustomerAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.SpendFromCustomerAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SpendFromCustomerAccountRequest.amount
+      option:
+        description: "Amount."
+        required:
+          - "amount"
+    - field: externalclient.SpendFromCustomerAccountResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event."
+    - field: externalclient.SpendFromCustomerAccountResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event."
+    - field: externalclient.SpendFromCustomerAccountResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even."
+    - field: externalclient.SpendFromCustomerAccountResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even."
+    - field: externalclient.SpendFromCustomerAccountResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event."
+    - field: externalclient.SpendFromCustomerAccountResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.SpendFromCustomerAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.UpdateCustomerAccountBalanceRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateCustomerAccountBalanceRequest.customer_id
+      option:
+        description: "The identifier of the customer. "
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.UpdateCustomerAccountBalanceRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.UpdateCustomerAccountBalanceRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateCustomerAccountBalanceRequest.amount
+      option:
+        description: "Amount."
+        required:
+          - "amount"
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.UpdateCustomerAccountBalanceResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.UpdateCustomerWalletRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateCustomerWalletRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.UpdateCustomerWalletRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateCustomerWalletRequest.active
+      option:
+        description: "Wallet active status."
+        example: 'false'
+    - field: externalclient.UpdateCustomerWalletRequest.name
+      option:
+        description: "A name assigned to a wallet."
+        example: '"my_wallet_name"'
+    - field: externalclient.UpdateCustomerWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.UpdateCustomerAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateCustomerAccountRequest.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "customer_id"
+    - field: externalclient.UpdateCustomerAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.UpdateCustomerAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateCustomerAccountRequest.active
+      option:
+        description: "Account active status."
+        example: 'false'
+    - field: externalclient.UpdateCustomerAccountRequest.default
+      option:
+        description: "Account default status."
+        example: 'false'
+    - field: externalclient.UpdateCustomerAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request."
+    - field: externalclient.AuthenticateRequest.key
+      option:
+        required:
+          - "key"
+    - field: externalclient.AuthenticateRequest.secret
+      option:
+        required:
+          - "secret"
+    - field: externalclient.ClientWallet.wallet_id
+      option:
+        description: "The identifier of the wallet."
+    - field: externalclient.ClientWallet.wallet_product_id
+      option:
+        description: "The identifier of the wallet product."
+    - field: externalclient.ClientWallet.name
+      option:
+        description: "Wallet name."
+    - field: externalclient.ClientWallet.active
+      option:
+        description: "Wallet active status."
+    - field: externalclient.ClientWallet.client_id
+      option:
+        description: "The identifier of the wallet's owner."
+    - field: externalclient.ClientWallet.group
+      option:
+        description: "Wallet group."
+    - field: externalclient.CreateClientWalletRequest.wallet_product_id
+      option:
+        description: "The identifier of the wallet product."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_product_id"
+    - field: externalclient.CreateClientWalletRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateClientWalletRequest.name
+      option:
+        description: "Wallet product name."
+        required:
+          - "name"
+    - field: externalclient.CreateClientWalletRequest.active
+      option:
+        description: "Wallet active status - defines if wallet should be active upon creation."
+        required:
+          - "active"
+    - field: externalclient.CreateClientWalletRequest.group
+      option:
+        description: "Wallet group - can be one of : fiat, crypto, equity, loyalty."
+        example: '"fiat"'
+        required:
+          - "group"
+    - field: externalclient.CreateClientWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.GetClientWalletRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.GetClientWalletRequest.client_id
+      option:
+        description: "The identifier of the owner."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetClientWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.ListClientWalletsRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListClientWalletsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListClientWalletsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListClientWalletsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListClientWalletsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.CreateClientAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.CreateClientAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.CreateClientAccountRequest.name
+      option:
+        description: "Account name."
+        required:
+          - "name"
+    - field: externalclient.CreateClientAccountRequest.active
+      option:
+        description: "Account active status - should account be active upon creation."
+        required:
+          - "active"
+    - field: externalclient.CreateClientAccountRequest.symbol
+      option:
+        description: "Account symbol, can represent currency in iso format, equity ticker, crypto."
+        required:
+          - "symbol"
+    - field: externalclient.CreateClientAccountRequest.default
+      option:
+        description: "Account default value - defines if account should be treated as default for the wallet."
+        required:
+          - "default"
+    - field: externalclient.CreateClientAccountRequest.parent_account_id
+      option:
+        description: "Optional parent account Id - if provided, account will be linked to a parent account."
+    - field: externalclient.CreateClientAccountRequest.config_override
+      option:
+        description: "Defines optional config values that will override the wallet product configuration and take priority."
+    - field: externalclient.CreateClientAccountRequest.iso_code
+      option:
+        description: "Optional iso code for fiat accounts, 00 - default, 10 - savings account, 20 - checking account, 30 - credit card, 40 - universal"
+    - field: externalclient.CreateClientAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.GetClientAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.GetClientAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.GetClientAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.GetClientAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.ListClientAccountsRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.ListClientAccountsRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.ListClientAccountsRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.ListClientAccountsRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.ListClientAccountsRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.ListClientAccountsResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.FindClientAccountHistoryRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.FindClientAccountHistoryRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.FindClientAccountHistoryRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.FindClientAccountHistoryRequest.sort
+      option:
+        description: "Sort - asc or desc to indicate sorting by creation date."
+        example: '"desc"'
+    - field: externalclient.FindClientAccountHistoryRequest.limit
+      option:
+        description: "Limit - to limit the returned results for pagination."
+        example: '2'
+    - field: externalclient.FindClientAccountHistoryRequest.offset
+      option:
+        description: "Offset - to control pagination."
+        example: '1'
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.transaction_id
+      option:
+        description: "The identifier of the transaction."
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event"
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event"
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even"
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even"
+    - field: externalclient.FindClientAccountHistoryResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event"
+    - field: externalclient.FindClientAccountHistoryResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.FindClientAccountHistoryResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.LoadClientAccountBalanceRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.LoadClientAccountBalanceRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.LoadClientAccountBalanceRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.LoadClientAccountBalanceRequest.amount
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "amount"
+    - field: externalclient.LoadClientAccountBalanceResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event"
+    - field: externalclient.LoadClientAccountBalanceResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event"
+    - field: externalclient.LoadClientAccountBalanceResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even"
+    - field: externalclient.LoadClientAccountBalanceResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even"
+    - field: externalclient.LoadClientAccountBalanceResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event"
+    - field: externalclient.LoadClientAccountBalanceResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.LoadClientAccountBalanceResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.SpendFromClientAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.SpendFromClientAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.SpendFromClientAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.SpendFromClientAccountRequest.amount
+      option:
+        description: "Amount."
+        required:
+          - "amount"
+    - field: externalclient.SpendFromClientAccountResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event"
+    - field: externalclient.SpendFromClientAccountResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event"
+    - field: externalclient.SpendFromClientAccountResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even"
+    - field: externalclient.SpendFromClientAccountResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even"
+    - field: externalclient.SpendFromClientAccountResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event"
+    - field: externalclient.SpendFromClientAccountResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.SpendFromClientAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.UpdateClientAccountBalanceRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateClientAccountBalanceRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.UpdateClientAccountBalanceRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateClientAccountBalanceRequest.amount
+      option:
+        description: "Amount."
+        required:
+          - "amount"
+    - field: externalclient.UpdateClientAccountBalanceResponse.AccountHistory.current_balance
+      option:
+        description: "Current balance - defines the balance at the time of event"
+    - field: externalclient.UpdateClientAccountBalanceResponse.AccountHistory.change_amount
+      option:
+        description: "Change amount - defines the amount change at the time of event"
+    - field: externalclient.UpdateClientAccountBalanceResponse.AccountHistory.balance_after_change
+      option:
+        description: "Balance after change - defines the balance after the even"
+    - field: externalclient.UpdateClientAccountBalanceResponse.AccountHistory.status
+      option:
+        description: "Status - defines the status of the even"
+    - field: externalclient.UpdateClientAccountBalanceResponse.AccountHistory.created_at
+      option:
+        description: "Defines the time of the event"
+    - field: externalclient.UpdateClientAccountBalanceResponse.account_id
+      option:
+        description: "The identifier of the account."
+    - field: externalclient.UpdateClientAccountBalanceResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.UpdateClientWalletRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateClientWalletRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateClientWalletRequest.active
+      option:
+        description: "Wallet active status."
+        example: 'false'
+    - field: externalclient.UpdateClientWalletRequest.name
+      option:
+        description: "Wallet name."
+        example: '"my_wallet_name"'
+    - field: externalclient.UpdateClientWalletResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+    - field: externalclient.UpdateClientAccountRequest.wallet_id
+      option:
+        description: "The identifier of the wallet."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "wallet_id"
+    - field: externalclient.UpdateClientAccountRequest.account_id
+      option:
+        description: "The identifier of the account."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+        required:
+          - "account_id"
+    - field: externalclient.UpdateClientAccountRequest.client_id
+      option:
+        description: "The identifier of the client."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+    - field: externalclient.UpdateClientAccountRequest.active
+      option:
+        description: "Account active status."
+        example: 'false'
+    - field: externalclient.UpdateClientAccountRequest.default
+      option:
+        description: "Account default status."
+        example: 'false'
+    - field: externalclient.UpdateClientAccountResponse.trace_id
+      option:
+        description: "The identifier used to track the API request"
+
+# -------------------------------------------------- UpgradeCardVirtual
+
+    - field: externalclient.UpgradeCardVirtualRequest.card_upgrade
+      option:
+        description: "Card object with information necessary to upgrade your card."
+        example: '{"card_id":"f7917e5d-d2cf-4830-bc0c-28c3932f43d0","card_status":"inactive","secure_id":"ad46e6a4-3e18-4d35-860c-baefaf14a8e9","pin":"1234","pan":"5123450069656229","cvv":"400","expiry_date":"06/23","valid_from_date":"06/22"}'
+
+    - field: externalclient.UpgradeCardVirtualRequest.delivery
+      option:
+        description: "Delivery object holds the card manufacturer delivery details for physical cards."
+
+    - field: externalclient.UpgradeCardVirtualRequest.three_ds
+      option:
+        description: "TDS object holds the content of security question, security answer and language code."
+        example: '{"additional_data":{"securityQuestion":"SecurityQuestionString_1","securityAnswer":"SecurityAnswerString_1"},"language_code":"en_US"}'
+
+    - field: externalclient.UpgradeCardVirtualRequest.card_manufacturer_id
+      option:
+        description: "Card Manufacturer configuration Id generated by CLOWD9 and associated to Product Id."
+        required:
+          - "card_manufacturer_id"
+
+    - field: externalclient.UpgradeCardVirtualResponse.card_details
+      option:
+        description: "The identifier of the card."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.UpgradeCardVirtualResponse.customer_id
+      option:
+        description: "The identifier of the customer."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.UpgradeCardVirtualResponse.program_id
+      option:
+        description: "The identifier of the card program."
+        pattern: *pattern_uuid
+        min_length: 36
+        example: *example_uuid
+
+    - field: externalclient.UpgradeCardVirtualResponse.trace_id
+      option: *trace_id_options

@@ -1,0 +1,21 @@
+providers:
+  docker:
+    defaultRule: Host(`{{ index .Labels "com.docker.compose.service" }}.localhost`)
+
+
+api:
+  insecure: true
+  dashboard: true
+entryPoints:
+  service:
+    address: ":9090"
+  web:
+    address: ":80"
+  grpc:
+    address: ":8081"
+serversTransport:
+  insecureSkipVerify: true
+log:
+  level: DEBUG
+
+

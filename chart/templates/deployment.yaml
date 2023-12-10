@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cowboys.fullname" . }}
+  labels:
+    {{- include "cowboys.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cowboys.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cowboys.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cowboys.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_URL
+              value: {{ .Values.envs.DB_URL }}
+            - name: ENV
+              value: {{ .Values.envs.ENV }}
+            - name: LOG_FORMAT
+              value: {{ .Values.envs.LOG_FORMAT }}
+            - name: PORT
+              value: {{ quote .Values.envs.PORT }}
+            - name: REGISTRY
+              value: {{ .Values.envs.REGISTRY }}
+            - name: REGISTRY_HOST
+              value: {{ .Values.envs.REGISTRY_HOST }}
+            - name: SELECTOR
+              value: {{ .Values.envs.SELECTOR }}
+            - name: SERVER_PORT
+              value: {{ quote .Values.envs.SERVER_PORT }}
+            - name: STATIC_SELECTOR_DOMAIN_NAME
+              value: {{ .Values.envs.STATIC_SELECTOR_DOMAIN_NAME }}
+            - name: STATIC_SELECTOR_ENVMOD
+              value: {{ quote .Values.envs.STATIC_SELECTOR_ENVMOD }}
+            - name: STATIC_SELECTOR_PORT_NUMBER
+              value: {{ quote .Values.envs.STATIC_SELECTOR_PORT_NUMBER }}
+            - name: TRANSPORT
+              value: {{ .Values.envs.TRANSPORT }}
+            - name: HTTP_PORT
+              value: {{ quote .Values.envs.HTTP_PORT }}
+            - name: STATIC_SELECTOR_SUFFIX
+              value: {{ quote .Values.envs.STATIC_SELECTOR_SUFFIX }}
+{{/*            - name: SERVICE_NAME*/}}
+{{/*              value: {{ .Values.envs.SERVICE_NAME }}*/}}
+          ports:
+            - name: grpc
+              containerPort: 8080
+              protocol: TCP
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9090
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9090
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

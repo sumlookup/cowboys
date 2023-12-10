@@ -17,7 +17,6 @@ import (
 )
 
 func NewGwServer(ctx context.Context, grpc grpc.ClientConnInterface, port string) *http.Server {
-	log.Infof("port - %v", port)
 	log.Infof("Starting HTTP API on %s. Env: %s", port, os.Getenv("ENV"))
 
 	// create http server

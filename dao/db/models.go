@@ -22,7 +22,6 @@ type Cowboy struct {
 type Game struct {
 	ID        uuid.UUID          `json:"id"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
 	Mode      string             `json:"mode"`
 	Winner    string             `json:"winner"`
@@ -31,12 +30,12 @@ type Game struct {
 }
 
 type GameLog struct {
-	ID        uuid.UUID          `json:"id"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
-	GameID    uuid.UUID          `json:"game_id"`
-	Shooter   uuid.UUID          `json:"shooter"`
-	Receiver  uuid.UUID          `json:"receiver"`
-	Damage    int32              `json:"damage"`
+	ID             uuid.UUID          `json:"id"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	GameID         uuid.UUID          `json:"game_id"`
+	ShooterID      uuid.UUID          `json:"shooter_id"`
+	ReceiverID     uuid.UUID          `json:"receiver_id"`
+	Damage         int32              `json:"damage"`
+	ReceiverHealth int32              `json:"receiver_health"`
+	ShooterHealth  int32              `json:"shooter_health"`
 }

@@ -11,11 +11,12 @@ import (
 )
 
 type Querier interface {
+	CountAllGameLogs(ctx context.Context, gameID uuid.UUID) (int64, error)
 	CreateCowboy(ctx context.Context, arg CreateCowboyParams) (uuid.UUID, error)
 	CreateGame(ctx context.Context, mode string) (uuid.UUID, error)
-	CreateGameLog(ctx context.Context, arg CreateGameLogParams) (uuid.UUID, error)
-	CreateManyCowboys(ctx context.Context, arg []CreateManyCowboysParams) *CreateManyCowboysBatchResults
-	DeleteAllCowboys(ctx context.Context) (*Cowboy, error)
+	CreateGameLog(ctx context.Context, arg CreateGameLogParams) error
+	CreateManyCowboys(ctx context.Context, arg []CreateManyCowboysParams) (int64, error)
+	DeleteAllCowboys(ctx context.Context) error
 	GetGameById(ctx context.Context, id uuid.UUID) (*Game, error)
 	GetRandomCowboy(ctx context.Context, id uuid.UUID) (*Cowboy, error)
 	GetSingleAliveCowboyAndCount(ctx context.Context, id uuid.UUID) (*GetSingleAliveCowboyAndCountRow, error)

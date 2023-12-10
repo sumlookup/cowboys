@@ -16,13 +16,48 @@ services:
       timeout: 3s
       retries: 5
 
-  cowboys-svc:
-    hostname: cowboys-svc
+  initcockroach:
+    image: cockroachdb/cockroach:v22.2.8
+    hostname: initcockroach
+    volumes:
+      - "./_cockroach-data:/cockroach/cockroach-data"
+    command: |
+      sql --url "postgresql://root@cockroach/db?sslmode=disable" -e
+      "CREATE DATABASE IF NOT EXISTS db;
+      CREATE DATABASE IF NOT EXISTS cowboys;
+      SHOW DATABASES;"
+    networks:
+      mesh:
+    depends_on:
+      - cockroach
+
+  traefik:
+    image: "traefik:v3.0"
+    container_name: "traefik"
+    command:
+      -  --configFile=/traefik.yaml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik_http.service=api@internal"
+    ports:
+      - "80:80"
+      - "8081:8081"
+    volumes:
+      - ./traefik.yaml:/traefik.yaml
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      mesh:
+
+  cowboys:
+#    deploy:
+#      mode: replicated
+#      replicas: 2
+    hostname: cowboys
     env_file:
-      - .local-env
+      - .docker-env
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./helpers/docker/Dockerfile
     depends_on:
       - cockroach
     networks:
@@ -34,15 +69,15 @@ services:
       - ${PWD}:/src
     command: go run .
     labels:
-      - traefik.http.routers.grpc-cowboys-svc.rule=PathPrefix(`/cowboys-svc`)
-      - traefik.http.routers.grpc-cowboys-svc.service=grpc-cowboys-svc
-      - traefik.http.routers.grpc-cowboys-svc.entrypoints=grpc
-      - traefik.http.routers.web-cowboys-svc.service=web-cowboys-svc
-      - traefik.http.routers.web-cowboys-svc.entrypoints=web
-      - traefik.http.services.grpc-cowboys-svc.loadbalancer.server.port=8081
-      - traefik.http.services.grpc-cowboys-svc.loadbalancer.server.scheme=h2c
-      - traefik.http.services.web-cowboys-svc.loadbalancer.server.port=9090
-      - traefik.http.services.web-cowboys-svc.loadbalancer.server.scheme=http
+      - traefik.http.routers.grpc-cowboys.rule=PathPrefix(`/cowboys`)
+      - traefik.http.routers.grpc-cowboys.service=grpc-cowboys
+      - traefik.http.routers.grpc-cowboys.entrypoints=grpc
+      - traefik.http.routers.web-cowboys.service=web-cowboys
+      - traefik.http.routers.web-cowboys.entrypoints=web
+      - traefik.http.services.grpc-cowboys.loadbalancer.server.port=8081
+      - traefik.http.services.grpc-cowboys.loadbalancer.server.scheme=h2c
+      - traefik.http.services.web-cowboys.loadbalancer.server.port=9090
+      - traefik.http.services.web-cowboys.loadbalancer.server.scheme=http
     healthcheck:
       test: [ "CMD", "/grpc_health_probe", -addr=:8081 ]
       interval: 3s
