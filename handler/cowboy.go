@@ -18,7 +18,7 @@ func (s *CowboysService) Run(ctx context.Context, req *pb.RunRequest) (*pb.RunRe
 
 	err := s.Engine.Run(ctx)
 	if err != nil {
-		log.Errorf("failed while running game engine : %v", err)
+		log.Errorf("Run : failed while running game engine : %v", err)
 		return nil, err
 	}
 
@@ -74,18 +74,18 @@ func (s *CowboysService) ShootAtRandom(ctx context.Context, req *pb.ShootAtRando
 	log := logrus.WithContext(ctx)
 	shooterId, err := uuid.Parse(req.GetShooterId())
 	if err != nil {
-		log.Errorf("failed to parse shooter_id : %v", err)
+		log.Errorf("ShootAtRandom : failed to parse shooter_id : %v", err)
 		return nil, ErrorArgumentInvalidShooterId
 	}
 	gameId, err := uuid.Parse(req.GetGameId())
 	if err != nil {
-		log.Errorf("failed to parse game_id : %v", err)
+		log.Errorf("ShootAtRandom : failed to parse game_id : %v", err)
 		return nil, ErrorArgumentInvalidGameId
 	}
 
 	health, err := s.Engine.ShootRandomCowboy(ctx, shooterId, gameId, req.GetShooterName(), req.GetShooterDamage())
 	if err != nil {
-		log.Errorf("failed shooting at target : %v", err)
+		log.Errorf("ShootAtRandom : failed shooting at target : %v", err)
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func (s *CowboysService) GetGameLogs(ctx context.Context, req *pb.GetGameLogsReq
 
 	gameId, err := uuid.Parse(req.GetGameId())
 	if err != nil {
-		log.Errorf("failed to parse game_id : %v", err)
+		log.Errorf("GetGameLogs : failed to parse game_id : %v", err)
 		return nil, ErrorArgumentInvalidGameId
 	}
 
@@ -113,13 +113,13 @@ func (s *CowboysService) GetGameLogs(ctx context.Context, req *pb.GetGameLogsReq
 		QueryOffset: getOffset(req.GetOffset()) * getPageSize(req.GetLimit()),
 	})
 	if err != nil {
-		log.Errorf("failed to list game logs : %v", err)
+		log.Errorf("GetGameLogs : failed to list game logs : %v", err)
 		return nil, err
 	}
 
 	count, err := s.Dao.CountAllGameLogs(ctx, gameId)
 	if err != nil {
-		log.Errorf("failed counting all game logs : %v", err)
+		log.Errorf("GetGameLogs : failed counting all game logs : %v", err)
 		return nil, err
 	}
 
