@@ -65,8 +65,6 @@ spec:
               value: {{ quote .Values.envs.HTTP_PORT }}
             - name: STATIC_SELECTOR_SUFFIX
               value: {{ quote .Values.envs.STATIC_SELECTOR_SUFFIX }}
-{{/*            - name: SERVICE_NAME*/}}
-{{/*              value: {{ .Values.envs.SERVICE_NAME }}*/}}
           ports:
             - name: grpc
               containerPort: 8080

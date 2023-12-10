@@ -39,15 +39,6 @@ func (c *TestConnection) GetDb() *sql.DB {
 	return c.Db
 }
 
-//func (c *TestConnection) GetPostgresPool() (*pgxpool.Pool, error) {
-//	pool, err := pgxpool.Connect(context.Background(), c.ts.PGURL().String())
-//	if err != nil {
-//		return nil, fmt.Errorf("cannot connect to test server: %v", err)
-//	}
-//
-//	return pool, nil
-//}
-
 func (c *TestConnection) GetDsn() string {
 	return c.Dsn
 }

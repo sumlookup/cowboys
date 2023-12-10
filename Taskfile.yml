@@ -34,9 +34,9 @@ tasks:
   compose:
     desc: "Run docker compose"
     cmds:
-      - docker compose -p castaijj -f ./docker-compose.yaml up cockroach -d
-      - docker compose -p castaijj -f ./docker-compose.yaml up initcockroach -d
-      - docker compose -p castaijj -f ./docker-compose.yaml up
+      - docker compose -p castai -f ./docker-compose.yaml up cockroach -d
+      - docker compose -p castai -f ./docker-compose.yaml up initcockroach -d
+      - docker compose -p castai -f ./docker-compose.yaml up
 
   deploy-crdb:
     desc: "install cockroachdb single cluster to k8s (minikube)"
