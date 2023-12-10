@@ -47,4 +47,5 @@ tasks:
   deploy-service:
     desc: "Deploy application to k8s cluster (minikube) using helm"
     cmds:
+      - kubectl create namespace dev
       - helm install cowboys chart/ -n dev
