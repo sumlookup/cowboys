@@ -41,6 +41,7 @@ tasks:
   deploy-crdb:
     desc: "install cockroachdb single cluster to k8s (minikube)"
     cmds:
+      - helm repo add cockroachdb https://charts.cockroachdb.com/
       - helm install cowboysdb --values ./helpers/crdb/crdb_values_override.yaml cockroachdb/cockroachdb
 
   deploy-service:
