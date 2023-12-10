@@ -17,6 +17,11 @@ For your convenience this project is using taskfile so please follow the instruc
 ```
 https://taskfile.dev/installation/
 ```
+Other basic requirements include:
+* Git
+* Docker
+* Golang
+
 
 ## How to run and test it
 This service can be run in 3 different ways
@@ -24,13 +29,26 @@ This service can be run in 3 different ways
 * **Docker**
 * **Deploy to k8s(minikube)**
 
+Clone this repo 
+```
+git clone https://github.com/sumlookup/cowboys.git
+```
+Cd into the directory
+
+```
+cd ./cowboys
+```
+
 Bellow are all the different ways to follow 
 
 ### 1. Locally( basic / intermediate )
 
 Before you attempt to run this you will need to install cockroachDB or run a single node version in docker.\
 
--- Run the following command in your terminal
+-- Run the following commands in your terminal
+```
+docker network create -d bridge roachnet
+```
 ```
 docker run -d \
 --name=roach-single \
@@ -76,14 +94,20 @@ curl --request GET 'localhost:9090/logs/200d96aa-b7f2-4083-b422-7313ecebf0de?off
 <br>
 <br>
 
-### 2. docker( intermediate )
+### 2. Docker( intermediate )
 
 To run the whole stack in docker \
 Make sure you don't have cockroachDB or Traefik already running. \
--- Run 
+-- Run macOs
 ```
 task compose
 ```
+-- Run Linux
+```
+sudo PWD=${PWD} task compose
+```
+Note - `Depending on your machine you might need to wait a bit for everything to laod up`
+
 If everything Succeeded you should be able to go to your browser and visit 
 ```
 traefik.localhost
@@ -113,6 +137,10 @@ This service includes a charts directory with service deployment \
 This Deployment was tested on minikube for local setup \
 Main dependency our service has is the `CockroachDB` and this needs to be deployed first
 
+This Step requires you to have the following installed : 
+* Kubectl with appropriate cluster context
+* Helm
+
 To Deploy CockroachDB using helm run 
 ```
 task deploy-crdb
@@ -139,6 +167,7 @@ kubectl logs -n dev <your_pod_name> --follow
 
 Then go to Postman open GRPC request and put `localhost:8084` and make grpc call to run the service
 
+Note : `This service runs perfectly fine if you scale the pods to multiple replicas`
 
 
 
